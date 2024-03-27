@@ -1,0 +1,41 @@
+@baseURL=http://localhost:8080/api
+@token=
+
+### Get user 
+GET {{baseURL}}/users
+Content-Type: application/json
+
+### login
+POST {{baseURL}}/users/login
+Content-Type: application/json
+
+{
+    "email": "rest.client@local.com",
+    "password": "restclient"
+}
+
+### Register
+POST {{baseURL}}/users/register
+Content-Type: application/json
+
+{
+
+}
+
+### Update user
+PUT {{baseURL}}/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+
+}
+
+### Disable user
+DELETE {{baseURL}}/users
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "reason": "disable user reason"
+}
