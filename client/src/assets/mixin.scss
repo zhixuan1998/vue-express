@@ -1,0 +1,7 @@
+@mixin base-container {
+    --max-pad-x: 360;
+    --min-pad-x: 10;
+
+    width: 100%;
+    padding: calc(var(--min-pad-x) * 1px) calc((max(100%, 576px) - 576px) * ((var(--max-pad-x) - var(--min-pad-x)) / (1920 - 576)) + (var(--min-pad-x) * 1px));
+}
