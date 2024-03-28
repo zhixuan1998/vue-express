@@ -4,6 +4,7 @@ import CustomHeader from "./CustomHeader.vue";
 import CustomSearchBox from "./CustomSearchBox.vue";
 import CustomSeparator from "./CustomSeparator.vue";
 import CustomFormControl from "./CustomFormControl.vue";
+import CustomErrorMessage from "./CustomErrorMessage.vue";
 
 export default {
     CustomForm,
@@ -11,5 +12,6 @@ export default {
     CustomHeader,
     CustomSearchBox,
     CustomSeparator,
-    CustomFormControl
+    CustomFormControl,
+    CustomErrorMessage
 }
