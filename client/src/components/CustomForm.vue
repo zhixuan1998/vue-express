@@ -46,9 +46,17 @@ const isMobile = useMediaQuery({ maxWidth: props.maxWidth });
     }
   }
 
-  & > *:not(.body-section),
-  .body-section > * {
+  & > .top-section,
+  .body-section > *:not(.separator) {
     padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  & .separator .left {
+    padding-left: 30px;
+  }
+
+  & .separator .right {
     padding-right: 30px;
   }
 

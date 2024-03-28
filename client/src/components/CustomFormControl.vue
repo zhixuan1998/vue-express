@@ -3,7 +3,13 @@
     <div class="main" :class="{ 'vertical-layout': verticalLayout }">
       <label class="label">{{ label }}</label>
       <div class="input-wrapper">
-        <input class="input" v-model="modelValue" :type="inputType" :readonly="readonly" />
+        <input
+          class="input"
+          v-model="modelValue"
+          :type="inputType"
+          :maxlength="maxLength"
+          :readonly="readonly"
+        />
         <div class="password-toggler">
           <font-awesome-icon
             v-if="isPassword"
@@ -23,6 +29,9 @@
 import { ref, useSlots } from 'vue';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
+const defaultInputType = 'text';
+const validInputTypes = ['text', 'password', 'number'];
+
 const modelValue = defineModel();
 const slots = useSlots();
 
@@ -35,13 +44,17 @@ const props = defineProps({
     type: String,
     default: 'Label'
   },
+  maxLength: {
+    type: Number,
+    default: 255
+  },
   verticalLayout: Boolean,
   readonly: Boolean
 });
 
 const isPassword = ref(props.type === 'password');
 const showPassword = ref(false);
-const inputType = ref(props.type);
+const inputType = ref(validInputTypes.includes(props.type) ? props.type : defaultInputType);
 
 const togglePassword = () => {
   showPassword.value = !showPassword.value;
@@ -111,11 +124,11 @@ const togglePassword = () => {
   }
 
   .error-messages {
+    display: flex;
+    flex-direction: column;
     color: rgb(255, 0, 0, 0.85);
-
-    .error-message-item {
-      margin: 5px 0 0 0;
-    }
+    row-gap: 5px;
+    margin-top: 5px;
   }
 }
 </style>
