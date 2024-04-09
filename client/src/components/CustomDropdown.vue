@@ -6,7 +6,7 @@
         :placeholder="placeholderValue"
         :readonly="!searchable"
         @click="openDropdown"
-        @mouseenter="menuOnHover ? openDropdown : () => {}"
+        @mouseenter="menuOnHover ? openDropdown : () => { }"
         @input="
           (e) => {
             searchValue = e.target.value;
