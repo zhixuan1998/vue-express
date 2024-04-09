@@ -7,9 +7,9 @@
       </div>
     </div>
     <custom-search-box v-if="searchBox" @search="search" />
-    <div class="menu-container">
-      <auth-menu v-if="authMenu" />
-      <user-menu v-if="userMenu" />
+    <div v-if="hasMenu" class="menu-container">
+      <auth-menu v-if="!userStore.user" />
+      <user-menu v-if="userStore.user" />
     </div>
   </div>
 </template>
@@ -17,6 +17,7 @@
 <script setup>
 import { useSlots } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '../stores';
 
 import IconLogo from './icons/IconLogo.vue';
 import AuthMenu from './Header/AuthMenu.vue';
@@ -27,18 +28,16 @@ defineProps({
     type: Boolean,
     default: false
   },
-  authMenu: {
+  hasMenu: {
     type: Boolean,
-    default: false
-  },
-  userMenu: {
-    type: Boolean,
-    default: false
+    default: true
   }
 });
 
 const slots = useSlots();
 const router = useRouter();
+const userStore = useUserStore();
+
 
 async function search(value) {
   console.log(value);
@@ -49,7 +48,7 @@ async function search(value) {
 @import '../assets/mixin.scss';
 
 .header-container {
-  @include base-container;
+  @include base-wrapper;
 
   display: grid;
   grid-auto-flow: column;
@@ -106,6 +105,7 @@ async function search(value) {
 
     .item {
       user-select: none;
+      text-align: center;
 
       &:not(:last-child) {
         border-right: 1px solid var(--theme-color-l);

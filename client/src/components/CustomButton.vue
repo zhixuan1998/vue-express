@@ -1,5 +1,5 @@
 <template>
-  <button class="button" :class="color">{{ text }}</button>
+  <button class="custom-button" :class="color"><slot></slot></button>
 </template>
 
 <script setup>
@@ -7,21 +7,16 @@ defineProps({
   color: {
     type: String,
     default: 'primary'
-  },
-  text: {
-    type: String,
-    default: 'Button'
   }
 });
 </script>
 
 <style lang="scss" scoped>
-.button {
+.custom-button {
   flex-grow: 1;
-  padding: 9px;
+  padding: 9px 36px;
   text-align: center;
   border: 1px solid var(--theme-color-l);
-  margin-top: 15px;
 
   &:disabled {
     cursor: not-allowed;
@@ -59,4 +54,3 @@ defineProps({
   }
 }
 </style>
-

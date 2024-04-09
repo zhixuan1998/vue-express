@@ -1,5 +1,7 @@
-@import './base.css';
-@import './custom.scss';
+@import "/node_modules/bootstrap/scss/bootstrap.scss";
+@import "./base.css";
+@import "./custom.scss";
+
 
 #app {
   /* min-width: 100vw;
@@ -18,9 +20,3 @@ a,
   transition: 0.15s;
   padding: 3px;
 }
-
-/* @media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-} */

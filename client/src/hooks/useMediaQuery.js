@@ -1,33 +1,35 @@
-import { ref, onBeforeMount } from 'vue'
+import { ref, onBeforeUnmount } from 'vue';
 
-function useMediaQuery({ maxWidth = null, minWidth = null }) {
-    const matches = ref(false)
-
-    if (maxWidth === null && minWidth === null) {
-        return false
-    }
-
-    const widthIndicator = maxWidth ? 'max-width' : 'min-width'
-    const widthValue = maxWidth ?? minWidth
+function useMediaQuery(queries) {
+    let matches = new Array(queries.length).fill().map(() => ref(false));
 
     const setMatches = () => {
-        const matchMedia = window.matchMedia(`(${widthIndicator}: ${widthValue})`)
+        for (let i = 0; i < queries.length; i++) {
+            const { maxWidth = null, minWidth = null } = queries[i];
 
-        if (matches.value === matchMedia.matches)
-            return
+            if (maxWidth === null && minWidth === null) {
+                matches[i].value = false;
+                continue;
+            }
+            const widthIndicator = maxWidth ? 'max-width' : 'min-width';
+            const widthValue = maxWidth ?? minWidth;
 
-        matches.value = matchMedia.matches
-    }
+            const matchMedia = window.matchMedia(`(${widthIndicator}: ${widthValue})`);
+
+            if (matches[i].value === matchMedia.matches) continue;
+
+            matches[i].value = matchMedia.matches;
+        }
+    };
 
     setMatches();
 
-    let resizeListener = window.addEventListener('resize', setMatches)
+    let resizeListener = window.addEventListener('resize', setMatches);
 
-    onBeforeMount(() => {
-        window.removeEventListener('resize', resizeListener)
-    })
-
-    return matches
+    onBeforeUnmount(() => {
+        window.removeEventListener('resize', resizeListener);
+    });
+    return matches;
 }
 
-export default useMediaQuery
+export default useMediaQuery;

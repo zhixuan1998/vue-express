@@ -1,12 +1,12 @@
 <template>
-  <div class="form-container" :class="{ mobile: isMobile }">
-    <div class="top-section">
-      <div class="title">{{ title }}</div>
-      <div class="description">{{ description }}</div>
+  <div class="container form-container" :class="{ mobile: isMobile }">
+    <div v-if="header" class="top-section">
+      <div class="title">{{ header.title }}</div>
+      <div class="description">{{ header.description }}</div>
     </div>
-    <custom-separator />
+    <custom-separator v-if="header" />
     <div class="body-section">
-      <slot name="body-section"></slot>
+      <slot></slot>
     </div>
   </div>
 </template>
@@ -15,20 +15,20 @@
 import { useMediaQuery } from '../hooks';
 
 const props = defineProps({
-  title: String,
-  description: String,
+  header: Object,
   maxWidth: {
     type: String,
     default: '550px'
   }
 });
 
-const isMobile = useMediaQuery({ maxWidth: props.maxWidth });
+const [isMobile] = useMediaQuery([{ maxWidth: props.maxWidth }]);
+
 </script>
 
 <style lang="scss">
 .form-container {
-  width: min(100%, v-bind(maxWidth));
+  max-width: v-bind(maxWidth);
   height: auto;
   background-color: #ffffff;
   border-radius: 4px;
@@ -67,9 +67,14 @@ const isMobile = useMediaQuery({ maxWidth: props.maxWidth });
   }
 
   .top-section,
-  .body-section,
-  .body-section > * {
+  .body-section {
     width: 100%;
+  }
+
+  .body-section > *:not(.separator) {
+    display: flex;
+    flex-direction: column;
+    row-gap: 22px;
   }
 }
 

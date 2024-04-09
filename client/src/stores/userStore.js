@@ -1,54 +1,82 @@
-import axios from 'axios';
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import config from '../../appsettings';
-
-
-const httpClient = axios.create({
-    baseURL: config.service.baseURL
-});
+import httpClient from '@/utils/axiosConfigurator';
 
 const useUserStore = defineStore('userStore', () => {
-    const user = ref(null);
+    const user = ref(
+        localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null
+    );
 
     const login = async ({ email, password }) => {
-        const result = await httpClient.post(`users/login`, { email, password });
+        const encodedPassword = btoa(password);
 
-        if (result?.data) {
-            localStorage.setItem('accessToken', result.data.accessToken);
-            localStorage.setItem('accessTokenExpiredAt', result.data.accessTokenExpiredAt);
-            localStorage.setItem('refreshToken', result.data.refreshToken);
-            localStorage.setItem('refreshTokenExpiredAt', result.data.refreshTokenExpiredAt);
-        }
+        const success = await httpClient
+            .post(`users/login`, { email, password: encodedPassword })
+            .then(async ({ data: { data } }) => {
+                localStorage.setItem('accessToken', data.accessToken);
+                localStorage.setItem('accessTokenExpiredAt', data.accessTokenExpiredAt);
+                localStorage.setItem('refreshToken', data.refreshToken);
+                localStorage.setItem('refreshTokenExpiredAt', data.refreshTokenExpiredAt);
 
-        await getUserProfile();
-    }
+                await getUser();
+                return true;
+            })
+            .catch((err) => {
+                return false;
+            });
 
-    const register = async ({ firstName, lastName, phoneNumber, email, password }) => {
-        const result = await httpClient.post(`users/register`, { firstName, lastName, phoneNumber, email, password });
-        login({ email, password });
-    }
+        return success;
+    };
 
-    const getUserProfile = async () => {
-        const headers = { authorization: `Bearer ${localStorage.getItem('accessToken')}` }; 
-        const result = await httpClient.get(`users`, { headers });
+    const register = async ({ firstName, lastName, email, dob, phoneCode, phoneNumber, password }) => {
+        const encodedPassword = btoa(password);
 
-        if (result?.data) {
-            user.value = result.data;
-            localStorage.setItem('user', user.value);
-        }
-    }
+       const success = await httpClient
+            .post(`users/register`, {
+                firstName,
+                lastName,
+                email,
+                dob,
+                phoneCode,
+                phoneNumber,
+                password: encodedPassword
+            })
+            .then(() => {
+                login({ email, password });
+                return true;
+            })
+            .catch((err) => {
+                return false;
+            });
+
+        return success;
+    };
+
+    const getUser = async () => {
+            await httpClient
+            .get(`users`)
+            .then(({ data: { data } }) => {
+                if (!data) return;
+
+                user.value = data;
+                localStorage.setItem('user', JSON.stringify(data));
+            })
+            .catch((err) => {});
+    };
 
     const logout = async () => {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('accessTokenExpiredAt');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('refreshTokenExpiredAt');
-        localStorage.removeItem('user');
-    }
+        const headers = { Authorization: `Bearer ${localStorage.getItem('accessToken')}` };
 
-    return { login, logout, register, getUserProfile, user }
+        await httpClient.post(`users/logout`, { headers }).then(() => {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('accessTokenExpiredAt');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('refreshTokenExpiredAt');
+            localStorage.removeItem('user');
+        });
+    };
 
-})
+    return { login, register, getUser, logout, user };
+});
 
 export default useUserStore;

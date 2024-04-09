@@ -3,22 +3,32 @@
     <div class="main" :class="{ 'vertical-layout': verticalLayout }">
       <label class="label">{{ label }}</label>
       <div class="input-wrapper">
-        <input
-          class="input"
-          v-model="modelValue"
-          :type="inputType"
-          :maxlength="maxLength"
-          :readonly="readonly"
+        <custom-dropdown
+          v-if="prependDropdown"
+          class="custom-dropdown"
+          v-model="prependValue"
+          :options="options"
+          :keyField="prependDropdown.keyField"
+          :valueField="prependDropdown.valueField"
+          relativeParentClass="input-wrapper"
+          searchable
         />
-        <div class="password-toggler">
-          <font-awesome-icon
-            v-if="isPassword"
-            :icon="showPassword ? faEye : faEyeSlash"
-            @click="togglePassword"
+        <div class="input-field">
+          <flat-pickr v-if="isCalendar" v-model="inputValue" />
+          <input
+            v-else
+            v-model="inputValue"
+            :type="currentType"
+            :maxlength="maxLength"
+            :readonly="readonly"
           />
+          <div v-if="isPassword" class="password-toggler">
+            <font-awesome-icon :icon="showPassword ? faEye : faEyeSlash" @click="togglePassword" />
+          </div>
         </div>
       </div>
     </div>
+    <slot></slot>
     <div v-if="slots['error-messages']" class="error-messages">
       <slot name="error-messages"></slot>
     </div>
@@ -26,17 +36,21 @@
 </template>
 
 <script setup>
+import FlatPickr from 'vue-flatpickr-component';
+import 'flatpickr/dist/flatpickr.css';
 import { ref, useSlots } from 'vue';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 
-const defaultInputType = 'text';
-const validInputTypes = ['text', 'password', 'number'];
+const defaultType = 'text';
+const validTypes = [defaultType, 'password', 'number', 'calendar'];
 
-const modelValue = defineModel();
+const inputValue = defineModel('input');
+const prependValue = defineModel('prepend');
+
 const slots = useSlots();
 
 const props = defineProps({
-  type: {
+  actualType: {
     type: String,
     default: 'text'
   },
@@ -48,17 +62,28 @@ const props = defineProps({
     type: Number,
     default: 255
   },
+  prependDropdown: {
+    type: Object,
+    default: null
+  },
+  options: {
+    type: Array,
+    default: () => []
+  },
+  searchable: Boolean,
   verticalLayout: Boolean,
   readonly: Boolean
 });
 
-const isPassword = ref(props.type === 'password');
+const isPassword = ref(props.actualType === 'password');
+const isCalendar = ref(props.actualType === 'calendar');
+
 const showPassword = ref(false);
-const inputType = ref(validInputTypes.includes(props.type) ? props.type : defaultInputType);
+const currentType = ref(validTypes.includes(props.actualType) ? props.actualType : defaultType);
 
 const togglePassword = () => {
   showPassword.value = !showPassword.value;
-  inputType.value = showPassword.value ? 'text' : 'password';
+  currentType.value = showPassword.value ? 'text' : 'password';
 };
 </script>
 
@@ -94,21 +119,35 @@ const togglePassword = () => {
       display: flex;
       height: 30px;
       flex-grow: 1;
-      border: 1px solid rgba(36, 32, 104, 0.2);
 
-      &:has(.input:focus) {
-        border-color: rgba(36, 32, 104, 0.6);
+      .custom-dropdown {
+        width: 70px;
+
+        input:not(:focus) {
+          border-right-color: rgba(0, 0, 0, 0);
+        }
       }
 
-      .input {
+      .input-field {
+        display: flex;
         flex-grow: 1;
-        width: 100;
-        border: 0;
-        transition: 0.25s;
-        padding-left: 10px;
+        height: 100%;
+        border: 1px solid rgba(36, 32, 104, 0.2);
 
-        &:focus {
-          outline: none;
+        &:has(input:focus) {
+          border-color: rgba(36, 32, 104, 0.6);
+        }
+
+        input {
+          flex-grow: 1;
+          height: 100%;
+          transition: 0.25s;
+          padding-left: 10px;
+          border: none;
+
+          &:focus {
+            outline: none;
+          }
         }
       }
 
@@ -126,9 +165,11 @@ const togglePassword = () => {
   .error-messages {
     display: flex;
     flex-direction: column;
-    color: rgb(255, 0, 0, 0.85);
     row-gap: 5px;
-    margin-top: 5px;
+
+    &:not(:empty) {
+      margin-top: 5px;
+    }
   }
 }
 </style>

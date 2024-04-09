@@ -1,16 +1,14 @@
-import axios from 'axios';
+import httpClient from '@/utils/axiosConfigurator';
 
 const userRepository = (config) => {
-
-    const httpClient = axios.create({
-        baseURL: config.service.baseURL
-    })
-
     return {
-        async getUser (userId) {
+        async getUser(userId) {
             return await httpClient.get(`/users/${userId}`);
+        },
+        async login({ username, password }) {
+            return await httpClient.post(`/users/login`, { username, password });
         }
-    }
-}
+    };
+};
 
 export default userRepository;

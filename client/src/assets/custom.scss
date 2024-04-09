@@ -1,3 +1,5 @@
+@import "../assets/mixin.scss";
+
 :root {
     --theme-color-s: #e4ceff;
     /* rgba(228, 206, 255, 1) */
@@ -12,4 +14,43 @@
 * {
     font-family: Roboto, "Helvetica Neue", Helvetica, Arial, 文泉驛正黑, "WenQuanYi Zen Hei", "Hiragino Sans GB",
         "儷黑 Pro", "LiHei Pro", "Heiti TC", 微軟正黑體, "Microsoft JhengHei UI", "Microsoft JhengHei", sans-serif;
+}
+
+input {
+    &,
+    &:focus {
+        outline: none;
+        border: none;
+    }
+}
+
+.main-content {
+    @include base-wrapper;
+
+    display: flex;
+    flex-direction: column;
+    row-gap: 10px;
+    background-color: rgba(228, 206, 255, 0.3);
+
+    & > * {
+        margin: auto;
+    }
+
+    .content-label {
+        background-color: var(--theme-color-s);
+        color: rgba(36, 32, 104, 0.5);
+        padding: responsive-spacing(5, 20) 5px;
+        text-align: center;
+        font-size: 40px;
+    }
+
+    .content-section {
+        width: 100%;
+        background-color: #ffffff;
+    }
+
+    @media (width < 576px) {
+        padding: 0;
+        row-gap: 0;
+    }
 }
