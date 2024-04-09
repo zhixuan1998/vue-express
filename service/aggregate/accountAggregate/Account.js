@@ -1,7 +1,11 @@
+const { ObjectId } = require("mongodb");
+const accountTypeEnum = require("../../enum/accountType");
+const { encrypt } = require("../../utils/encryption");
+
 module.exports = class Account {
     constructor({
         userId,
-        accType,
+        accType = accountTypeEnum.NORMAL,
         email,
         password = null,
         isDeleted = false,
@@ -9,8 +13,10 @@ module.exports = class Account {
         createdBy = new ObjectId("000000000000000000000000"),
         modifiedAt = new Date(),
         modifiedBy = new ObjectId("000000000000000000000000"),
-        _id = null,
+        _id = null
     }) {
+        if (!Object.values(accountTypeEnum).includes(accType)) throw new Error("Invalid account type.");
+
         this.userId = userId;
         this.accType = accType;
         this.email = email;
@@ -22,4 +28,13 @@ module.exports = class Account {
         this.modifiedBy = modifiedBy;
         this._id = _id;
     }
-}
+
+    getUserId() {
+        return this.userId?.toString() ?? null;
+    }
+
+    verifyAuthentication(password, { key, iv }) {
+        const encrypted = encrypt(password, key, iv);
+        return encrypted === this.password;
+    }
+};

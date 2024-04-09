@@ -1,16 +1,16 @@
-const jwt = require('jsonwebtoken');
-const { ObjectId } = require("mongodb")
+const jwt = require("jsonwebtoken");
+const { ObjectId } = require("mongodb");
 
 module.exports = class User {
     constructor({
-        firstName = null,
-        lastName = null,
+        firstName,
+        lastName,
         gender = null,
-        dob = null,
-        email = null,
-        password = null,
-        phoneNumber = null,
-        lastLogin = new Date(),
+        dob,
+        email,
+        phoneCode,
+        phoneNumber,
+        lastLogin = null,
         isActivated = false,
         isEnable = true,
         createdAt = new Date(),
@@ -24,14 +24,14 @@ module.exports = class User {
         this.gender = gender;
         this.dob = dob;
         this.email = email;
-        this.password = password;
+        this.phoneCode = phoneCode;
         this.phoneNumber = phoneNumber;
         this.lastLogin = lastLogin;
         this.isActivated = isActivated;
         this.isEnable = isEnable;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
-        this.modifiedAt =  modifiedAt;
+        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
         this._id = _id;
     }
@@ -44,18 +44,38 @@ module.exports = class User {
         return `${this.firstName} ${this.lastName}`;
     }
 
-    getToken() {
+    getToken(accessTokenSecret, refreshTokenSecret) {
+        const accessTokenExpiredAt = new Date();
+        const refreshTokenExpiredAt = new Date()
 
+        accessTokenExpiredAt.setDate(accessTokenExpiredAt.getDate() + 1);
+        refreshTokenExpiredAt.setFullYear(accessTokenExpiredAt.getFullYear() + 1);
+
+        const accessTokenPayload = {
+            id: this.getId(),
+            firstName: this.firstName,
+            lastName: this.lastName,
+            dob: new Date(this.dob).toISOString(),
+            email: this.email,
+            expiredAt: accessTokenExpiredAt
+        };
+
+        const refreshTokenPayload = {
+            id: this.getId()
+        }
+
+        const accessToken = jwt.sign(accessTokenPayload, accessTokenSecret, { expiresIn: '1d' });
+        const refreshToken = jwt.sign(refreshTokenPayload, refreshTokenSecret, { expiresIn: '1y' });
+
+        return {
+            accessToken,
+            accessTokenExpiredAt,
+            refreshToken,
+            refreshTokenExpiredAt
+        };
     }
 
     verifyAuthentication(email, password) {
-        const payload = {
-            userId: this._id,
-            createdAt: new Date().toISOString()
-        }
-
-        const token = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET)
-
-        return token;
+        
     }
-}
+};

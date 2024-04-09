@@ -1,16 +1,14 @@
-const controller = require('controller')();
-const defineController = require('../../utils/defineController');
+const { createController } = require("awilix-express")
 const { generateSuccessResponse, generateErrorResponse } = require('../../utils/responseParser');
 const { Address } = require('../../aggregate');
+const errorMessages = require('../../errorMessages');
 
-module.exports = ({
+const controller = ({
     config,
-    repositories: {
-        userRepository
-    }
+    userRepository
 }) => {
-    return defineController(controller, {
 
+    return {
         async createAddress(req, res) {
             try {
                 const user = req.httpContext.user;
@@ -97,10 +95,11 @@ module.exports = ({
                 return res.status(500).send(generateErrorResponse(err));
             }
         }
-    });
+    }
 }
 
-controller
+module.exports = createController(controller)
+    .prefix('/api')
     .post('/user/addresses', 'createAddress')
     .get('/user/addresses', 'getUserAddresses')
     .get('/user/addresses/:addressId', 'getUserAddress')

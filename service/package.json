@@ -24,6 +24,7 @@
     "jsonwebtoken": "https://github.com/auth0/node-jsonwebtoken/tarball/master",
     "moment": "^2.30.1",
     "mongodb": "^6.5.0",
+    "prettier": "^3.2.5",
     "winston": "^3.12.0",
     "winston-mongodb": "^5.1.1"
   },

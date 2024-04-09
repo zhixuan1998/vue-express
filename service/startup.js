@@ -1,12 +1,12 @@
-const helmet = require('helmet');
-const express = require('express');
-const winston = require('winston');
-require('winston-mongodb').MongoDB;
-const expressWinston = require('express-winston');
-const { loadControllers, scopePerRequest } = require('awilix-express');
+const helmet = require("helmet");
+const express = require("express");
+const winston = require("winston");
+require("winston-mongodb").MongoDB;
+const expressWinston = require("express-winston");
+const { loadControllers, scopePerRequest } = require("awilix-express");
 const { container, setup } = require("./container");
 
-module.exports = async(config) => {
+module.exports = async (config) => {
     const logger = expressWinston.logger({
         transports: [
             // new winston.transports.Console(),
@@ -15,13 +15,15 @@ module.exports = async(config) => {
                 level: "info",
                 capped: true,
                 cappedSize: 100000,
-                options: { useUnifiedTopology: true },
+                options: { useUnifiedTopology: true }
             })
         ],
         metaField: "metadata",
         requestWhitelist: ["body", "headers", "query", "method", "url"],
-        responseWhitelist:  ["body", "statusCode", "error"]
+        responseWhitelist: ["body", "statusCode", "error"]
     });
+
+    await setup();
 
     var app = express();
     app.use(express.json());
@@ -34,12 +36,13 @@ module.exports = async(config) => {
         next();
     });
 
-    app.use(scopePerRequest(container));
-    app.use(loadControllers('src/*/*Controller.js', { cwd: __dirname }));
-
     // inject middlewares
-    // app.use(require("./middleware/jwtMiddleware"));
+    
+    app.use(require("./middleware/jwtMiddleware"));
     // app.use(require("./middleware/userMiddleware"));
 
+    app.use(scopePerRequest(container));
+    app.use(loadControllers("src/*/*Controller.js", { cwd: __dirname }));
+
     return app;
-}
+};
