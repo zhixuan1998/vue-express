@@ -1,4 +1,4 @@
-const { createContainer, asValue, asFunction, Lifetime, listModules } = require("awilix");
+const { createContainer, asValue, Lifetime } = require("awilix");
 const { MongoClient, ServerApiVersion } = require('mongodb');
 const config = require("./appsettings.js");
 

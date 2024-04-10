@@ -35,9 +35,9 @@ module.exports = ({
             }
 
             try {
-                const result = await brands.find(query);
+                const result = await brands.find(query).toArray();
 
-                return [null, result ? new Brand(result) : null];
+                return [null, result.length ? result.map(r => new Brand(r)) : null];
 
             } catch (error) {
                 return [error];

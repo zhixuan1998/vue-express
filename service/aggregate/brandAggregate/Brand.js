@@ -1,3 +1,5 @@
+const { ObjectId } = require("mongodb");
+
 module.exports = class Brand {
     constructor({
         name,
@@ -8,7 +10,7 @@ module.exports = class Brand {
         createdBy = new ObjectId("000000000000000000000000"),
         modifiedAt = new Date(),
         modifiedBy = new ObjectId("000000000000000000000000"),
-        _id        
+        _id
     }) {
         this.name = name;
         this.image = image;
@@ -16,7 +18,7 @@ module.exports = class Brand {
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
-        this.modifiedAt =  modifiedAt;
+        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
         this._id = _id
     }

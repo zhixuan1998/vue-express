@@ -1,4 +1,3 @@
-const { relativeTimeThreshold } = require("moment");
 const { ObjectId } = require("mongodb");
 
 module.exports = class Product {
