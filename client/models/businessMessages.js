@@ -7,6 +7,12 @@ export const messages = {
         passwordFormat: () =>
             'Password must be 8 to 20 characters long, with at least one uppercase letter, one number, and one symbol.'
     },
+    title: {
+        login: () => "Log In",
+        signup: () => "Sign Up",
+        categories: () => 'CATEGORIES',
+        brands: () => 'BRANDS',
+    },
     label: {
         username: () => 'Username',
         password: () => 'Password',
@@ -18,8 +24,6 @@ export const messages = {
         lastName: () => 'Last Name',
         dob: () => 'Date of Birth',
         gender: () => 'Gender',
-        categories: () => 'CATEGORIES',
-        brands: () => 'BRANDS'
     },
     button: {
         login: () => 'LOG IN',

@@ -2,11 +2,11 @@
   <custom-header searchBox />
   <div class="main-content">
     <div class="content-section">
-      <div class="content-label">{{ $messages.label.categories() }}</div>
+      <div class="content-label">{{ $messages.title.categories() }}</div>
       <custom-mini-item-carousel :items="categories" labelField="name" />
     </div>
     <div class="content-section">
-      <div class="content-label">{{ $messages.label.brands() }}</div>
+      <div class="content-label">{{ $messages.title.brands() }}</div>
       <custom-mini-item-carousel :items="brands" labelField="name" />
     </div>
   </div>
@@ -22,20 +22,19 @@ const categories = ref([]);
 const brands = ref([]);
 
 onMounted(async () => {
-  await getCategories();
-  await getBrands();
+  const [categoryResults, brandResults] = await Promise.all([
+    $repositories.categoryRepository.getAll(),
+    $repositories.brandRepository.getAll()
+  ]);
+
+  categories.value = categoryResults?.data?.data?.results ?? [];
+  brands.value = brandResults?.data?.data?.results ?? [];
+
+  await getProducts();
 });
 
-async function getCategories() {
-  await $repositories.categoryRepository.getAll().then(({ data: { data } }) => {
-    categories.value = data.results;
-  });
-}
-
-async function getBrands() {
-  await $repositories.brandRepository.getAll().then(({ data: { data } }) => {
-    brands.value = data.results;
-  });
+async function getProducts() {
+  await $repositories.productRepository.getAll({});
 }
 </script>
 

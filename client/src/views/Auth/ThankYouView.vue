@@ -1,7 +1,4 @@
 <template>
-  <custom-header :hasMenu="false">
-    <template #right-content> Log In </template>
-  </custom-header>
   <div class="main-content">
     <custom-form
       class="custom-form"
@@ -31,7 +28,7 @@ const buttonText = ref(
 );
 
 function goToNextPage() {
-  router.push({ path: route.query?.redirect ?? '/' });
+  router.push({ path: route.query?.redirect ?? '/home' });
 }
 </script>
 

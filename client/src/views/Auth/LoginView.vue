@@ -1,7 +1,4 @@
 <template>
-  <custom-header :hasMenu="false">
-    <template #right-content> Log In </template>
-  </custom-header>
   <div class="main-content" :class="{ mobile: isMobile }">
     <custom-form
       :header="{ title: 'Log In', description: 'Please enter your credentials' }"
@@ -98,7 +95,7 @@ const login = async () => {
     return resetForm();
   }
 
-  router.push({ path: route.query?.redirect ?? '/' });
+  router.push({ path: route.query?.redirect ?? '/home' });
 };
 
 const $v = useVuelidate(

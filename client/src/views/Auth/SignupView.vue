@@ -1,7 +1,4 @@
 <template>
-  <custom-header :hasMenu="false">
-    <template #right-content> Sign Up </template>
-  </custom-header>
   <div class="main-content">
     <custom-form
       :header="{ title: 'Sign Up', description: 'Please fill up the registration form' }"

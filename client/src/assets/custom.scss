@@ -30,9 +30,9 @@ input {
     flex-direction: column;
     row-gap: 10px;
     background-color: rgba(228, 206, 255, 0.3);
-   
+
     * {
-        font-family:  "Microsoft JhengHei UI", Poppins, Roboto, sans-serif;
+        font-family: "Microsoft JhengHei UI", Poppins, Roboto, sans-serif;
     }
 
     & > * {
@@ -42,9 +42,9 @@ input {
     .content-label {
         background-color: var(--theme-color-s);
         color: rgba(36, 32, 104, 0.5);
-        padding: responsive-spacing(5, 20) 5px;
+        padding: 5px;
         text-align: center;
-        font-size: 40px;
+        font-size: 30px;
     }
 
     .content-section {
