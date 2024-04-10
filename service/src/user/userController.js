@@ -41,7 +41,7 @@ const controller = ({
 
                 return res.status(200).send(generateSuccessResponse(response));
             } catch (err) {
-                console.log(err)
+                // console.log(err);
                 return res.status(500).send(generateErrorResponse(err));
             }
         },
@@ -100,8 +100,9 @@ const controller = ({
                 if (createRefreshTokenError) throw createRefreshTokenError;
 
                 return res.status(200).send(generateSuccessResponse(response));
+
             } catch (err) {
-                console.log(err);
+                // console.log(err);
                 return res.status(500).send(generateErrorResponse());
             }
         },
@@ -153,8 +154,9 @@ const controller = ({
                 if (createAccountError) throw createAccountError;
 
                 return res.status(200).send(generateSuccessResponse());
+
             } catch (err) {
-                console.log(err);
+                // console.log(err);
                 return res.status(500).send(generateErrorResponse());
             }
         },
@@ -179,7 +181,9 @@ const controller = ({
                 if (updateUserError) throw updateUserError;
 
                 return res.status(200).send(generateSuccessResponse());
+
             } catch (err) {
+                // console.log(err);
                 return res.status(500).send(generateErrorResponse());
             }
         },

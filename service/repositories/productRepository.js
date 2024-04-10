@@ -15,7 +15,7 @@ module.exports = ({
             categoryIds,
             brandIds,
             shopIds,
-            limit = -1,
+            limit = 10,
             skip = 0,
             sortBy = productSortByEnum.NAME,
             sortDirection = sortDirectionEnum.ASC

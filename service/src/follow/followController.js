@@ -42,7 +42,7 @@ const controller = ({
                 return res.status(200).send(generateSuccessResponse());
 
             } catch (err) {
-                console.log(err);
+                // console.log(err);
                 return res.status(500).send(generateErrorResponse());
             }
         },
@@ -74,7 +74,7 @@ const controller = ({
                 return res.status(200).send(generateSuccessResponse());
 
             } catch (err) {
-                console.log(err);
+                // console.log(err);
                 return res.status(500).send(generateErrorResponse());
             }
         }

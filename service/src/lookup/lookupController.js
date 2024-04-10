@@ -23,7 +23,7 @@ const controller = ({
                 return res.status(200).send(generateSuccessResponse(response));
 
             } catch (err) {
-                console.log(err);
+                // console.log(err);
                 return res.status(500).send(generateErrorResponse());
             }
         }

@@ -6,9 +6,9 @@ const followTypeEnum = require("../../enum/followType");
 const controller = ({
     config,
     productRepository,
-    wishlistRepository
+    // wishlistRepository
 }) => {
-    
+
     return {
         async getProducts(req, res) {
             try {
@@ -27,7 +27,7 @@ const controller = ({
                 if ((isFollowedBrand === true || isFollowedShop === true || isWishlist === true) && !user)
                     return res.status(403).send(generateErrorResponse(errorMessages.forbidden()));
 
-                const userId = user.id;
+                const userId = user?.id;
 
                 if (isFollowedBrand === true) {
                     const [followedBrandsError, followedBrands] = await followRepository.getAll({
@@ -59,16 +59,16 @@ const controller = ({
 
                 let productIds = [];
 
-                if (isWishlist === true) {
-                    const [wishlistsError, wishlists] = await wishlistRepository.getAll(userId);
+                // if (isWishlist === true) {
+                //     const [wishlistsError, wishlists] = await wishlistRepository.getAll(userId);
 
-                    if (wishlistsError)
-                        throw wishlistsError;
+                //     if (wishlistsError)
+                //         throw wishlistsError;
 
-                    if (wishlists) {
-                        productIds.concat(wishlists.map(r => r.getProductId()));
-                    }
-                }
+                //     if (wishlists) {
+                //         productIds.concat(wishlists.map(r => r.getProductId()));
+                //     }
+                // }
 
                 const [productsError, products] = await productRepository.getAll({
                     search,
@@ -76,7 +76,6 @@ const controller = ({
                     categoryIds,
                     brandIds,
                     shopIds,
-                    isWishlist
                 });
 
                 if (productsError)
@@ -96,8 +95,8 @@ const controller = ({
 
                 return res.status(200).send(generateSuccessResponse(response));
 
-            } catch (error) {
-                console.log(err);
+            } catch (err) {
+                // console.log(err);
                 return res.status(500).send(generateErrorResponse());
             }
         }
