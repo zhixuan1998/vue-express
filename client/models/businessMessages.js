@@ -17,7 +17,9 @@ export const messages = {
         firstName: () => 'First Name',
         lastName: () => 'Last Name',
         dob: () => 'Date of Birth',
-        gender: () => 'Gender'
+        gender: () => 'Gender',
+        categories: () => 'CATEGORIES',
+        brands: () => 'BRANDS'
     },
     button: {
         login: () => 'LOG IN',

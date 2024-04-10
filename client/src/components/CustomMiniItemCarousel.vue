@@ -21,7 +21,10 @@
       v-for="(columnItems, i) of formattedItems"
       :key="i"
       class="swiper-slide"
-      :class="{ 'border-right-invisible': i === activeIndex + totalColumn - 1 }"
+      :class="{
+        'border-right-invisible':
+          i === activeIndex + totalColumn - 1 || i === formattedItems.length - 1
+      }"
     >
       <div v-for="(item, j) of columnItems" :key="j" class="w-100 item-container">
         <div @click="goToDetailPage(item)" class="item-image">
@@ -110,6 +113,7 @@ function goToDetailPage(item) {
       cursor: pointer;
       transition: background-color 0.15s;
       border-right: var(--item-border);
+      background-color: #ffffff;
 
       &:hover {
         background-color: var(--border-color);
