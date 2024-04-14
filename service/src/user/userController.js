@@ -56,9 +56,7 @@ const controller = ({
                 if (accountError) throw accountError;
 
                 if (!account)
-                    return res
-                        .status(404)
-                        .send(generateErrorResponse(errorMessages.recordNotFound("Account not found.")));
+                    return res.status(404).send(generateErrorResponse(errorMessages.recordNotFound("Account not found.")));
 
                 const decodedPassword = atob(password);
 

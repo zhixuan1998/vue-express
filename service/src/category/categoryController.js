@@ -11,7 +11,9 @@ const controller = ({
         async getCategories(req, res) {
             try {
 
-                const [categoriesError, categories] = await categoryRepository.getAll();
+                const { categoryIds } = req.query;
+
+                const [categoriesError, categories] = await categoryRepository.getAll({ categoryIds });
 
                 if (categoriesError)
                     throw categoriesError;

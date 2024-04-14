@@ -7,12 +7,18 @@ module.exports = ({
     }
 }) => {
     return {
-        async getAll() {
+        async getAll({ categoryIds }) {
             try {
-                const result = await categories.find({
+                let query = {
                     isEnable: true,
                     isDeleted: false
-                }).toArray();
+                }
+
+                if (categoryIds?.length) {
+                    query._id = { $in: categoryIds.map(id => new ObjectId(id)) };
+                }
+
+                const result = await categories.find(query).toArray();
 
                 return [null, result.length ? result.map(r => new Category(r)) : null];
 

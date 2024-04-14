@@ -14,7 +14,9 @@ const controller = ({
         async getBrands(req, res) {
             try {
 
-                const [brandsError, brands] = await brandRepository.getAll({});
+                const { brandIds } = req.query;
+
+                const [brandsError, brands] = await brandRepository.getAll({ brandIds });
 
                 if (brandsError)
                     throw brandsError;

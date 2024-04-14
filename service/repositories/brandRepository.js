@@ -9,22 +9,7 @@ module.exports = ({
     }
 }) => {
     return {
-        async get(brandId) {
-            try {
-                const result = await brands.findOne({
-                    _id: new ObjectId(brandId),
-                    isEnable: true,
-                    isDeleted: false
-                });
-
-                return [null, result ? new Brand(result) : null];
-
-            } catch (error) {
-                return [error];
-            }
-        },
-
-        async getAll({ search }) {
+        async getAll({ search, brandIds }) {
             let query = {
                 isEnable: true,
                 isDeleted: false
@@ -32,6 +17,10 @@ module.exports = ({
 
             if (search) {
                 query.name = { $regex: '^' + search, $options: 'i' }
+            }
+
+            if (brandIds?.length) {
+                query._id = { $in: brandIds.map(id => new ObjectId(id)) };
             }
 
             try {
