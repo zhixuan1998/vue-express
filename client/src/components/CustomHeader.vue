@@ -1,12 +1,12 @@
 <template>
   <div class="header-container" :class="{ 'search_box-enabled': searchBox }">
     <div class="logo-container">
-      <icon-logo class="logo" @click="router.push({ name: 'home' })" />
+      <icon-logo class="logo" @click="router.push({ name: 'Home' })" />
       <div v-if="slots['right-content']" class="right-content">
         <slot name="right-content"></slot>
       </div>
     </div>
-    <custom-search-box v-if="searchBox" @search="search" />
+    <custom-search-box v-if="searchBox" :searchOptions="searchOptions" @search="search" />
     <div v-if="hasMenu" class="menu-container">
       <auth-menu v-if="!userStore.user" />
       <user-menu v-if="userStore.user" />
@@ -23,6 +23,8 @@ import IconLogo from './icons/IconLogo.vue';
 import AuthMenu from './Header/AuthMenu.vue';
 import UserMenu from './Header/UserMenu.vue';
 
+const emits = defineEmits(['search']);
+
 defineProps({
   searchBox: {
     type: Boolean,
@@ -31,6 +33,10 @@ defineProps({
   hasMenu: {
     type: Boolean,
     default: true
+  },
+  searchOptions: {
+    type: Array,
+    default: () => []
   }
 });
 
@@ -39,8 +45,8 @@ const router = useRouter();
 const userStore = useUserStore();
 
 
-async function search(value) {
-  console.log(value);
+async function search(value, searchArea) {
+  emits('search', value, searchArea);
 }
 </script>
 
@@ -60,7 +66,7 @@ async function search(value) {
     grid-template: 'logo menu' auto;
   }
 
-  & > * {
+  & > *:not(.search_box-container) {
     height: 100%;
   }
 
@@ -87,7 +93,7 @@ async function search(value) {
     grid-area: search-box;
   }
 
-  @media (width < 576px) {
+  @media (width < 992px) {
     grid-template:
       'logo menu' auto
       'search-box search-box' auto;
@@ -97,7 +103,7 @@ async function search(value) {
 
 <style lang="scss">
 .header-container {
-  .menu-container {
+  & > .menu-container {
     display: flex;
     align-items: center;
     grid-area: menu;

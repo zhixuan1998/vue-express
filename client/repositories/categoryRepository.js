@@ -2,8 +2,8 @@ import httpClient from '@/utils/axiosConfigurator';
 
 const categoryRepository = (config) => {
     return {
-        async getAll() {
-            return await httpClient.get("/users/categories");
+        async getAll({ categoryIds }) {
+            return await httpClient.get("/users/categories", { categoryIds });
         }
     }
 }

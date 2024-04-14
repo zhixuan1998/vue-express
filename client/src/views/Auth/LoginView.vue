@@ -95,7 +95,7 @@ const login = async () => {
     return resetForm();
   }
 
-  router.push({ path: route.query?.redirect ?? '/home' });
+  router.push({ path: route.query?.redirect ?? '/' });
 };
 
 const $v = useVuelidate(

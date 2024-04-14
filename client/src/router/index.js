@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/Home/HomeView.vue';
-import { BaseView, LoginView, SignupView, ThankYouView } from '../views/Auth';
+import { AuthBaseView, LoginView, SignupView, ThankYouView } from '../views/Auth';
+import { ProductBaseView, BrandView, CategoryView } from '../views/Product';
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -11,7 +12,7 @@ const router = createRouter({
             children: [
                 {
                     path: '/home',
-                    name: 'home',
+                    name: 'Home',
                     component: HomeView
                 }
             ]
@@ -19,22 +20,39 @@ const router = createRouter({
         {
             path: '/auth',
             redirect: { path: '/login' },
-            component: BaseView,
+            component: AuthBaseView,
             children: [
                 {
                     path: '/login',
-                    name: 'login',
+                    name: 'Login',
                     component: LoginView
                 },
                 {
                     path: '/signup',
-                    name: 'signup',
+                    name: 'Signup',
                     component: SignupView
                 },
                 {
                     path: '/thank-you',
-                    name: 'thankyou',
+                    name: 'ThankYou',
                     component: ThankYouView
+                }
+            ]
+        },
+        {
+            path: '/products',
+            name: 'Product',
+            component: ProductBaseView,
+            children: [
+                {
+                    path: '/brands/:brandId',
+                    name: 'ProductBrand',
+                    component: BrandView
+                },
+                {
+                    path: '/categories/:categoryId',
+                    name: 'ProductCategory',
+                    component: CategoryView
                 }
             ]
         }

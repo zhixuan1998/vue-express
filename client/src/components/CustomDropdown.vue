@@ -1,22 +1,29 @@
 <template>
   <div class="custom-dropdown" ref="dropdownEl">
-    <div class="input-container">
-      <input
-        :value="searchValue"
-        :placeholder="placeholderValue"
-        :readonly="!searchable"
-        @click="openDropdown"
-        @mouseenter="menuOnHover ? openDropdown : () => {}"
-        @input="
-          (e) => {
-            searchValue = e.target.value;
-            search(e.target.value);
-          }
-        "
-      />
+    <div class="dropdown-container" @click="openDropdown">
+      <button class="dropdown-opener">
+        <div>{{ displayValue }}</div>
+        <font-awesome-icon
+          v-if="!hideDropdownIcon"
+          :icon="showDropdown ? faAngleUp : faAngleDown"
+        />
+      </button>
     </div>
     <div class="menu-container" :class="{ open: showDropdown }">
       <div class="menu-content">
+        <span class="menu-item" v-if="searchable">
+          <input
+            :value="searchValue"
+            :readonly="!searchable"
+            @mouseenter="menuOnHover ? openDropdown : () => {}"
+            @input="
+              (e) => {
+                searchValue = e.target.value;
+                search(e.target.value);
+              }
+            "
+          />
+        </span>
         <span v-if="!filteredOptions?.length" class="menu-item text-center"> No options </span>
         <span
           v-else
@@ -39,16 +46,19 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { onClickOutside } from '@vueuse/core';
+import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 
 const props = defineProps({
   options: {
     type: Array,
     default: () => []
   },
-  keyField: { type: String, default: 'value' },
+  keyField: { type: String, default: 'key' },
   valueField: { type: [String, Function], default: 'value' },
+  displayField: { type: [String, Function], default: 'value' },
   searchable: Boolean,
-  menuOnHover: Boolean,
+  menuOnHover: Boolean, // temporarily not working
+  hideDropdownIcon: Boolean,
   relativeParentClass: {
     type: String,
     default: 'custom-dropdown'
@@ -61,7 +71,7 @@ const props = defineProps({
 
 const showDropdown = ref(false);
 const searchValue = ref('');
-const placeholderValue = ref('');
+const displayValue = ref('');
 const selectedItem = defineModel();
 const dropdownEl = ref(null);
 const filteredOptions = ref([]);
@@ -69,13 +79,14 @@ const filteredOptions = ref([]);
 onMounted(() => {
   setRelativeElPosition();
   initSearch();
-  placeholderValue.value = selectedItem.value;
+  initDisplayValue();
 });
 
 watch(
   () => props.options,
   () => {
     initSearch();
+    initDisplayValue();
   }
 );
 
@@ -93,9 +104,9 @@ function hideDropdown() {
 }
 
 function selectItem(item) {
-  placeholderValue.value = item[props.keyField];
+  displayValue.value =
+    typeof props.displayField === 'function' ? props.displayField(item) : item[props.displayField];
   selectedItem.value = item[props.keyField];
-  searchValue.value = '';
 }
 
 function search(inputValue) {
@@ -111,6 +122,17 @@ function search(inputValue) {
 function initSearch() {
   searchValue.value = '';
   filteredOptions.value = props.options;
+}
+
+function initDisplayValue() {
+  if (!selectedItem.value) return;
+
+  const initOption = filteredOptions.value.find((o) => o[props.keyField] === selectedItem.value);
+  displayValue.value = initOption
+    ? typeof props.displayField === 'function'
+      ? props.displayField(initOption)
+      : initOption[props.displayField]
+    : '';
 }
 
 function setRelativeElPosition() {
@@ -130,35 +152,38 @@ function setRelativeElPosition() {
   }
 
   &,
-  .input-container,
-  .input-container input {
+  .dropdown-container,
+  .dropdown-container .dropdown-opener {
     height: 100%;
   }
 
-  .input-container {
-    input {
-      border: none;
-      text-align: center;
-      text-overflow: ellipsis;
-      padding: 0 5px;
+  .dropdown-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    .dropdown-opener {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       width: 100%;
-      background-color: rgba(228, 206, 255, 0.6);
-      border: 1px solid rgba(36, 32, 104, 0.2);
+      padding: 0 10px;
+      border: none;
+      background-color: rgba(0, 0, 0, 0);
 
-      &:not(:read-only):focus::placeholder,
-      &:not(:read-only):focus::-webkit-input-placeholder {
-        color: transparent;
+      div {
+        display: flex;
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
+    }
 
-      &:focus {
-        outline: none;
-        border-color: rgba(36, 32, 104, 0.6);
-      }
-
-      &::placeholder,
-      &::-webkit-input-placeholder {
-        color: inherit;
-      }
+    .fa-angle-down,
+    .fa-angle-up {
+      font-size: 15px;
+      margin-left: 10px;
     }
   }
 
@@ -167,6 +192,7 @@ function setRelativeElPosition() {
     position: absolute;
     top: 100%;
     left: 0;
+    width: 100%;
     max-height: v-bind(menuHeight);
     grid-template-rows: 0fr;
     border: none;
@@ -176,7 +202,6 @@ function setRelativeElPosition() {
     &.open {
       grid-template-rows: 1fr;
       border: 1px solid var(--theme-color-s);
-      border-top: none;
     }
 
     .menu-content {
@@ -185,7 +210,7 @@ function setRelativeElPosition() {
 
       display: flex;
       flex-direction: column;
-      overflow-y: scroll;
+      overflow-y: auto;
       background-color: #ffffff;
 
       @supports selector(::-webkit-scrollbar) {
@@ -216,11 +241,39 @@ function setRelativeElPosition() {
       .menu-item {
         color: var(--theme-color-xl);
         width: 100%;
-        padding: 15px;
+        padding: 5px 10px;
+        cursor: pointer;
 
-        &.selected,
-        &:not(.selected):hover {
+        &.selected:not(:has(input)),
+        &:hover:not(:has(input)) {
           background-color: rgba(228, 206, 255, 0.5);
+        }
+
+        &:has(input) {
+          background-color: #ffffff;
+          position: sticky;
+          top: 0;
+          left: 0;
+        }
+
+        input {
+          padding: 1px 5px;
+          width: 100%;
+          border: 1px solid rgba(36, 32, 104, 0.2);
+
+          &:focus {
+            border: 1px solid rgba(36, 32, 104, 0.6);
+          }
+
+          &:not(:read-only):focus::placeholder,
+          &:not(:read-only):focus::-webkit-input-placeholder {
+            color: transparent;
+          }
+
+          &::placeholder,
+          &::-webkit-input-placeholder {
+            color: inherit;
+          }
         }
       }
     }

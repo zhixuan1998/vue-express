@@ -2,8 +2,8 @@ import httpClient from '@/utils/axiosConfigurator';
 
 const brandRepository = (config) => {
     return {
-        async getAll() {
-            return await httpClient.get("/users/brands");
+        async getAll({ brandIds }) {
+            return await httpClient.get("/users/brands", { brandIds });
         }
     }
 }

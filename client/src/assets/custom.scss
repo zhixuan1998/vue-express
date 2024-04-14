@@ -40,10 +40,9 @@ input {
     }
 
     .content-label {
-        background-color: var(--theme-color-s);
+        // background-color: var(--theme-color-s);
         color: rgba(36, 32, 104, 0.5);
         padding: 5px;
-        text-align: center;
         font-size: 30px;
     }
 
@@ -55,5 +54,9 @@ input {
     @media (width < 576px) {
         padding: 0;
         row-gap: 0;
+
+        .content-label {
+            text-align: center;
+        }
     }
 }

@@ -2,7 +2,7 @@
   <div class="search_box-container">
     <input
       class="input"
-      v-model="modelValue"
+      v-model="inputValue"
       :readonly="readonly"
       :placeholder="placeholder"
       @keyup="
@@ -11,6 +11,11 @@
         }
       "
     />
+    <custom-dropdown
+      v-if="searchOptions.length"
+      v-model="dropdownValue"
+      :options="searchOptions"
+    ></custom-dropdown>
     <div class="icon-wrapper" @click="search">
       <font-awesome-icon :icon="faSearch" />
     </div>
@@ -18,12 +23,19 @@
 </template>
 
 <script setup>
+import { ref, onMounted, watch } from 'vue';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 
-const modelValue = defineModel();
 const emits = defineEmits(['search']);
 
-defineProps({
+const inputValue = ref('');
+const dropdownValue = ref('');
+let previousInputValue = '';
+let previousDropdownValue = '';
+
+const props = defineProps({
+  searchOptions: Array,
+  searchDropdown: Object,
   placeholder: {
     type: String,
     default: 'Search'
@@ -39,43 +51,96 @@ defineProps({
 });
 
 function search() {
-  if (modelValue.value) {
-    emits('search', modelValue.value);
-  }
+  if (
+    !inputValue.value ||
+    (inputValue.value === previousInputValue && dropdownValue.value === previousDropdownValue)
+  )
+    return;
+
+  emits('search', inputValue.value, dropdownValue.value);
+  previousInputValue = inputValue.value;
+  previousDropdownValue = dropdownValue.value;
 }
+
+onMounted(() => {
+  initDropdownValue();
+});
+
+function initDropdownValue() {
+  if (!props.searchOptions?.length) return;
+
+  dropdownValue.value = props.searchDropdown?.keyField
+    ? props.searchOptions[0][props.searchDropdown.keyField]
+    : props.searchOptions[0].key;
+}
+
+watch(
+  () => props.searchOptions,
+  () => initDropdownValue()
+);
 </script>
 
-
-<style lang="scss" scoped>
+<style lang="scss">
 .search_box-container {
   --cont-height: 45px;
   --padding: 5px;
 
-  display: flex;
+  display: grid;
   align-items: center;
+  grid-template: 'input icon' 1fr / auto calc(var(--cont-height) * 1.2);
   position: relative;
   padding: var(--padding);
   width: v-bind(width);
-  height: var(--cont-height);
-  overflow: hidden;
+  height: auto;
   background-color: #ffffff;
 
   & > * {
     height: calc(var(--cont-height) - (var(--padding) * 2));
   }
 
-  .input {
-    padding: 0 0 0 15px;
-    width: calc(100% - (var(--padding) * 2));
-    border: none;
-    font-size: inherit;
+  @media (width < 400px) {
+    grid-row-gap: 5px;
+  }
 
-    &:focus {
-      outline: none;
+  &:has(.custom-dropdown) {
+    grid-template: 'input dropdown icon' 1fr / auto max-content calc(var(--cont-height) * 1.2);
+
+    @media (width < 400px) {
+      grid-template:
+        'input icon' var(--cont-height)
+        'dropdown dropdown' minmax(0, var(--cont-height)) / 1fr calc(var(--cont-height) * 1.2);
+    }
+  }
+
+  .input {
+    grid-area: input;
+    flex-grow: 1;
+    padding: 0 0 0 10px;
+    font-size: inherit;
+  }
+
+  .custom-dropdown {
+    grid-area: dropdown;
+
+    @media (width < 400px) {
+      border-top: 1px solid rgba(0, 0, 0, 0.3);
+    }
+
+    .dropdown-container .dropdown-opener {
+      width: max-content;
+      color: rgba(0, 0, 0, 0.6);
+      height: 65%;
+      border-left: 1px solid rgba(0, 0, 0, 0.3);
+
+      @media (width < 400px) {
+        width: 100%;
+        border-left-width: 0;
+      }
     }
   }
 
   .icon-wrapper {
+    grid-area: icon;
     width: calc(var(--cont-height) * 1.2);
     height: 100%;
     display: flex;

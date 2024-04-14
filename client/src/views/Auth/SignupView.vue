@@ -58,7 +58,8 @@
             :label="$messages.label.phoneNumber()"
             :prepend-dropdown="{
               keyField: 'phoneCode',
-              valueField: (item) => `${item.phoneCode} - ${item.name}`
+              valueField: (item) => `${item.phoneCode} - ${item.name}`,
+              displayField: 'phoneCode'
             }"
             verticalLayout
           >
@@ -185,7 +186,7 @@ async function signup() {
 
   if (result) {
     router.push({
-      name: 'thankyou',
+      name: 'ThankYou',
       query: route.query?.redirect ? { redirect: route.query.redirect } : {}
     });
   }

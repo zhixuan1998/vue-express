@@ -10,8 +10,8 @@ export const messages = {
     title: {
         login: () => "Log In",
         signup: () => "Sign Up",
-        categories: () => 'CATEGORIES',
-        brands: () => 'BRANDS',
+        categories: () => 'Categories',
+        brands: () => 'Brands',
     },
     label: {
         username: () => 'Username',

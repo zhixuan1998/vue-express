@@ -27,7 +27,7 @@
       }"
     >
       <div v-for="(item, j) of columnItems" :key="j" class="w-100 item-container">
-        <div @click="goToDetailPage(item)" class="item-image">
+        <div @click="selectItem(item)" class="item-image">
           <img
             :src="`https://picsum.photos/id/${i * 2 + j + 100}/200/200`"
             class="rounded-circle"
@@ -46,6 +46,8 @@ import { register } from 'swiper/element/bundle';
 import { useMediaQuery } from '@/hooks';
 
 register();
+
+const emits = defineEmits(['select-item']);
 
 const props = defineProps({
   items: {
@@ -83,8 +85,8 @@ function onSlideChange(swiper) {
   activeIndex.value = swiper.detail[0].activeIndex;
 }
 
-function goToDetailPage(item) {
-  console.log(item);
+function selectItem(item) {
+  emits('select-item', item);
 }
 </script>
 
@@ -114,16 +116,13 @@ function goToDetailPage(item) {
       transition: background-color 0.15s;
       border-right: var(--item-border);
       background-color: #ffffff;
+      transition: box-shadow 0.15s;
 
       &:hover {
-        background-color: var(--border-color);
+        box-shadow: inset 0 0 3px 1.5px var(--border-color);
 
         img {
-          scale: 1.1;
-        }
-
-        .item-label {
-          font-weight: 600;
+          scale: 0.95;
         }
       }
 
@@ -153,7 +152,6 @@ function goToDetailPage(item) {
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        transition: font-weight 0.15s;
       }
     }
   }

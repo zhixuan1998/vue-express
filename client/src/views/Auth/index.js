@@ -1,6 +1,6 @@
 import LoginView from './LoginView.vue';
 import SignupView from './SignupView.vue';
+import AuthBaseView from './BaseView.vue';
 import ThankYouView from './ThankYouView.vue';
-import BaseView from './BaseView.vue';
 
-export { BaseView, LoginView, SignupView, ThankYouView };
+export { LoginView, SignupView, AuthBaseView, ThankYouView };

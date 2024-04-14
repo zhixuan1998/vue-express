@@ -28,7 +28,7 @@ const buttonText = ref(
 );
 
 function goToNextPage() {
-  router.push({ path: route.query?.redirect ?? '/home' });
+  router.push({ path: route.query?.redirect ?? '/' });
 }
 </script>
 

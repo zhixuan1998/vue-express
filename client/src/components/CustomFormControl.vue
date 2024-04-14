@@ -10,8 +10,10 @@
           :options="options"
           :keyField="prependDropdown.keyField"
           :valueField="prependDropdown.valueField"
+          :displayField="prependDropdown.displayField"
           relativeParentClass="input-wrapper"
           searchable
+          hideDropdownIcon
         />
         <div class="input-field">
           <flat-pickr v-if="isCalendar" v-model="inputValue" />
@@ -123,8 +125,21 @@ const togglePassword = () => {
       .custom-dropdown {
         width: 70px;
 
-        input:not(:focus) {
-          border-right-color: rgba(0, 0, 0, 0);
+        .dropdown-container {
+          background-color: rgba(228, 206, 255, 0.6);
+          border: 1px solid rgba(36, 32, 104, 0.2);
+
+          .dropdown-opener div {
+            justify-content: center;
+          }
+
+          &:has(.dropdown-opener:focus) {
+            border-color: rgba(36, 32, 104, 0.6);
+          }
+
+          &:has(.dropdown-opener:not(:focus)) {
+            border-right-color: rgba(0, 0, 0, 0);
+          }
         }
       }
 
