@@ -4,3 +4,10 @@
     width: 100%;
     padding: 10px responsive-spacing()
 }
+
+@mixin two-line-ellipsis {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

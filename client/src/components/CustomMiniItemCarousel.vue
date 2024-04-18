@@ -26,8 +26,13 @@
           i === activeIndex + totalColumn - 1 || i === formattedItems.length - 1
       }"
     >
-      <div v-for="(item, j) of columnItems" :key="j" class="w-100 item-container">
-        <div @click="selectItem(item)" class="item-image">
+      <div
+        v-for="(item, j) of columnItems"
+        :key="j"
+        class="w-100 item-container"
+        @click="selectItem(item)"
+      >
+        <div class="item-image">
           <img
             :src="`https://picsum.photos/id/${i * 2 + j + 100}/200/200`"
             class="rounded-circle"
@@ -91,6 +96,8 @@ function selectItem(item) {
 </script>
 
 <style lang="scss" scoped>
+@import '../assets/mixin.scss';
+
 .swiper-container {
   width: 100%;
 
@@ -144,14 +151,10 @@ function selectItem(item) {
       }
 
       .item-label {
+        @include two-line-ellipsis;
         margin: 0;
         height: 40px;
         text-align: center;
-        display: -webkit-box;
-        line-clamp: 2;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
       }
     }
   }

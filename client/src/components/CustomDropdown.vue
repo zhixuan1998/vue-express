@@ -107,6 +107,7 @@ function selectItem(item) {
   displayValue.value =
     typeof props.displayField === 'function' ? props.displayField(item) : item[props.displayField];
   selectedItem.value = item[props.keyField];
+  hideDropdown();
 }
 
 function search(inputValue) {

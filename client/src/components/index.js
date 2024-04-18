@@ -7,6 +7,7 @@ import CustomSeparator from './CustomSeparator.vue';
 import CustomRadioGroup from './CustomRadioGroup.vue';
 import CustomFormControl from './CustomFormControl.vue';
 import CustomErrorMessage from './CustomErrorMessage.vue';
+import CustomListingSection from './CustomListingSection.vue';
 import CustomMiniItemCarousel from './CustomMiniItemCarousel.vue';
 
 export default {
@@ -19,5 +20,6 @@ export default {
     CustomRadioGroup,
     CustomFormControl,
     CustomErrorMessage,
+    CustomListingSection,
     CustomMiniItemCarousel
 };

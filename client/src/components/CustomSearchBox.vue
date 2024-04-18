@@ -107,8 +107,8 @@ watch(
 
     @media (width < 400px) {
       grid-template:
-        'input icon' var(--cont-height)
-        'dropdown dropdown' minmax(0, var(--cont-height)) / 1fr calc(var(--cont-height) * 1.2);
+        'input icon' 1fr
+        'dropdown dropdown' minmax(0, 1fr) / 1fr calc(var(--cont-height) * 1.2);
     }
   }
 
@@ -123,6 +123,7 @@ watch(
     grid-area: dropdown;
 
     @media (width < 400px) {
+      padding-top: 5px;
       border-top: 1px solid rgba(0, 0, 0, 0.3);
     }
 

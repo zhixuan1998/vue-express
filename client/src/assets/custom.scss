@@ -1,4 +1,5 @@
-@import "../assets/mixin.scss";
+@import "./mixin.scss";
+@import "./font-face.css";
 
 :root {
     --theme-color-s: #e4ceff;
@@ -15,6 +16,10 @@
     font-family: Poppins, Roboto, sans-serif;
 }
 
+body {
+    overflow-x: hidden;
+}
+
 input {
     &,
     &:focus {
@@ -28,27 +33,27 @@ input {
 
     display: flex;
     flex-direction: column;
-    row-gap: 10px;
+    row-gap: 5px;
     background-color: rgba(228, 206, 255, 0.3);
 
     * {
-        font-family: "Microsoft JhengHei UI", Poppins, Roboto, sans-serif;
+        font-family: NotoSans-Regular, "Microsoft JhengHei UI", Poppins, Roboto, sans-serif;
     }
 
     & > * {
         margin: auto;
     }
 
-    .content-label {
+    [class$="-section"] {
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0);
+    }
+
+    .content-section .content-label {
         // background-color: var(--theme-color-s);
         color: rgba(36, 32, 104, 0.5);
         padding: 5px;
         font-size: 30px;
-    }
-
-    .content-section {
-        width: 100%;
-        background-color: rgba(0, 0, 0, 0);
     }
 
     @media (width < 576px) {
@@ -57,6 +62,45 @@ input {
 
         .content-label {
             text-align: center;
+        }
+    }
+
+    .listing-section {
+        @media (width < 576px) {
+            padding: 5px;
+        }
+
+        .item {
+            &:hover {
+                translate: 0 -2.5px;
+            }
+
+            .item-image {
+                &,
+                img {
+                    width: 100%;
+                }
+
+                img {
+                    aspect-ratio: 1 / 1.1;
+                }
+            }
+
+            .item-content {
+                display: flex;
+                flex-direction: column;
+                padding: 10px;
+
+                .item-name {
+                    @include two-line-ellipsis;
+                    font-size: 14px;
+                }
+
+                .item-price {
+                    font-size: 18px;
+                    color: #f57224;
+                }
+            }
         }
     }
 }
