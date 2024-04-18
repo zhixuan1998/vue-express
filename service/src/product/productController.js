@@ -19,8 +19,12 @@ const controller = ({
                     shopIds = [],
                     isFollowedBrand,
                     isFollowedShop,
-                    isWishlist
+                    isWishlist,
+                    limit,
+                    page,
                 } = req.body;
+
+                search = decodeURI(search);
 
                 const user = req.httpContext?.user;
 
@@ -28,6 +32,10 @@ const controller = ({
                     return res.status(403).send(generateErrorResponse(errorMessages.forbidden()));
 
                 const userId = user?.id;
+
+                limit = limit <= 0 ? 10 : limit;
+                page = page <= 0 ? 1 : page;
+                let skip = limit * (page - 1);
 
                 if (isFollowedBrand === true) {
                     const [followedBrandsError, followedBrands] = await followRepository.getAll({
@@ -76,6 +84,8 @@ const controller = ({
                     categoryIds,
                     brandIds,
                     shopIds,
+                    limit,
+                    skip,
                 });
 
                 if (productsError)
