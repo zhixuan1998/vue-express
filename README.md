@@ -10,14 +10,24 @@ An e-commerce web application project using Vue.js / Express.js
 
 This project has to run **client** and **api-server** separately in order to works
 
-First, open 2 VSCode and change directory
+### Client
+
+Open VSCode and change directory
 
 ```sh
 cd client
 ```
 
+Read **client/README.md** to setup
+
+
+
+### API Server
+
+Open another VSCode and change directory
+
 ```sh
 cd api-server
 ```
 
-After that, follow README.md instructions to setup **client** and **api-server**
+Read **api-server/README.md** to setup
