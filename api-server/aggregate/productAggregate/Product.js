@@ -3,6 +3,7 @@ const { ObjectId } = require("mongodb");
 module.exports = class Product {
     constructor({
         name,
+        imageUrl,
         quantity,
         unitPrice,
         description = null,
@@ -14,9 +15,10 @@ module.exports = class Product {
         createdBy = new ObjectId("000000000000000000000000"),
         modifiedAt = new Date(),
         modifiedBy = new ObjectId("000000000000000000000000"),
-        _id,
+        _id
     }) {
         this.name = name;
+        this.imageUrl = imageUrl;
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.description = description;
@@ -40,6 +42,6 @@ module.exports = class Product {
     }
 
     getCategoryIds() {
-        return this.categoryIds.length ? this.categoryIds.map(r => r.toString()) : [];
+        return this.categoryIds.map((categoryId) => categoryId.toString());
     }
-}
+};

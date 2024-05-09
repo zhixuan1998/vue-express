@@ -1,5 +1,7 @@
 const { ObjectId } = require("mongodb");
-const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+
+const oneYearInMs = 1 * 365 * 24 * 60 * 60 * 1000;
 
 module.exports = class RefreshToken {
     constructor({
@@ -13,8 +15,8 @@ module.exports = class RefreshToken {
         modifiedBy = new ObjectId("000000000000000000000000")
     }) {
         this.userId = userId;
-        this.token = token;
-        this.expiredAt = expiredAt;
+        this.token = token ?? crypto.randomUUID();
+        this.expiredAt = expiredAt ?? new Date(Date.now() + oneYearInMs);
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
@@ -24,16 +26,5 @@ module.exports = class RefreshToken {
 
     getUserId() {
         return this.userId?.toString() ?? null;
-    }
-
-    getPayload(refreshTokenSecret) {
-        try {
-            const payload = jwt.verify(this.token, refreshTokenSecret);
-
-            return [null, payload];
-
-        } catch (err) {
-            return [err];
-        }
     }
 };

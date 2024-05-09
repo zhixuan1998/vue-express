@@ -4,32 +4,27 @@ const errorMessages = require("../../errorMessages");
 const { Brand } = require("../../aggregate");
 const followTypeEnum = require("../../enum/followType");
 
-const controller = ({
-    config,
-    brandRepository,
-    followRepository
-}) => {
-
+const controller = ({ config, brandRepository, followRepository }) => {
     return {
         async getBrands(req, res) {
             try {
-
                 const { brandIds } = req.query;
 
                 const [brandsError, brands] = await brandRepository.getAll({ brandIds });
 
-                if (brandsError)
-                    throw brandsError;
+                if (brandsError) throw brandsError;
 
-                let response = brands ? brands.map(r => {
-                    return {
-                        brandId: r.getId(),
-                        name: r.name
-                    }
-                }) : [];
+                let response = brands
+                    ? brands.map((r) => {
+                          return {
+                              brandId: r.getId(),
+                              name: r.name,
+                              imageUrl: r.imageUrl
+                          };
+                      })
+                    : [];
 
                 return res.status(200).send(generateSuccessResponse(response));
-
             } catch (err) {
                 // console.log(err);
                 return res.status(500).send(generateErrorResponse());
@@ -38,11 +33,9 @@ const controller = ({
 
         async getUserFollowed(req, res) {
             try {
-
                 const user = req.httpContext.user;
 
-                if (!user)
-                    return res.status(403).send(generateErrorResponse(errorMessages.forbidden()));
+                if (!user) return res.status(403).send(generateErrorResponse(errorMessages.forbidden()));
 
                 const userId = user.id;
 
@@ -51,29 +44,29 @@ const controller = ({
                     userId
                 });
 
-                if (followsError)
-                    throw followsError;
+                if (followsError) throw followsError;
 
-                let response = follows ? follows.map(r => {
-                    const brand = new Brand(r.referenceObject)
+                let response = follows
+                    ? follows.map((r) => {
+                          const brand = new Brand(r.referenceObject);
 
-                    return {
-                        brandId: brand.getId(),
-                        name: brand.name
-                    }
-                }) : [];
+                          return {
+                              brandId: brand.getId(),
+                              name: brand.name
+                          };
+                      })
+                    : [];
 
                 return res.status(200).send(generateSuccessResponse(response));
-
             } catch (err) {
                 // console.log(err);
                 return res.status(500).send(generateErrorResponse());
             }
         }
-    }
-}
+    };
+};
 
 module.exports = createController(controller)
     .prefix("/api")
     .get("/users/brands", "getBrands")
-    .get("/users/followedBrands", "getUserFollowedBrands")
+    .get("/users/followedBrands", "getUserFollowedBrands");

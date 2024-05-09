@@ -3,6 +3,7 @@ const { ObjectId } = require("mongodb");
 module.exports = class Category {
     constructor({
         name,
+        imageUrl,
         isEnable = true,
         isDeleted = false,
         createdAt = new Date(),
@@ -12,10 +13,12 @@ module.exports = class Category {
         _id
     }) {
         this.name = name;
+        this.imageUrl = imageUrl;
+        this.isEnable = isEnable;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
-        this.modifiedAt =  modifiedAt;
+        this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
         this._id = _id;
     }
@@ -23,4 +26,4 @@ module.exports = class Category {
     getId() {
         return this._id?.toString() ?? null;
     }
-}
+};

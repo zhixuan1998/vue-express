@@ -5,4 +5,8 @@ module.exports = {
     forbidden: () => ({ code: 1002, message: "Forbidden error." }),
     unauthorized: () => ({ code: 1003, message: "Unauthorized error." }),
 
-}
+    // Auth
+    tokenExpired: () => ({ code: 1100, message: "Token expired." }),
+    refreshTokenNotFound: () => ({ code: 1101, message: "Refresh token not found." }),
+    fingerprintMismatch: () => ({ code: 1102, message: "Fingerprint mismatch." })
+};

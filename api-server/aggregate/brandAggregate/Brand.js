@@ -3,7 +3,7 @@ const { ObjectId } = require("mongodb");
 module.exports = class Brand {
     constructor({
         name,
-        image = null,
+        imageUrl,
         isEnable = true,
         isDeleted = false,
         createdAt = new Date(),
@@ -13,17 +13,17 @@ module.exports = class Brand {
         _id
     }) {
         this.name = name;
-        this.image = image;
+        this.imageUrl = imageUrl;
         this.isEnable = isEnable;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
         this.createdBy = createdBy;
         this.modifiedAt = modifiedAt;
         this.modifiedBy = modifiedBy;
-        this._id = _id
+        this._id = _id;
     }
 
     getId() {
         return this._id?.toString() ?? null;
     }
-}
+};

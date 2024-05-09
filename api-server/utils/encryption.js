@@ -1,7 +1,5 @@
 const crypto = require("crypto");
 
-crypto.createHash("sha256").update("e-commerce application").digest("hex");
-
 function encrypt(message, key, iv) {
     let cipher = crypto.createCipheriv("aes-256-cbc", key, Buffer.from(iv, "hex"));
     let encrypted = cipher.update(message, "utf-8", "hex");
@@ -14,7 +12,12 @@ function decrypt(message, key, iv) {
     return decrypted + decipher.final("utf-8");
 }
 
+function hash(message, algorithm = "sha256") {
+    return crypto.createHash(algorithm).update(message).digest("hex");
+}
+
 module.exports = {
     encrypt,
-    decrypt
+    decrypt,
+    hash
 };

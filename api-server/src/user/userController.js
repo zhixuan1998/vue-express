@@ -2,15 +2,10 @@ const { createController } = require("awilix-express");
 const { generateSuccessResponse, generateErrorResponse } = require("../../utils/responseParser");
 const { User, Account, RefreshToken } = require("../../aggregate");
 const errorMessages = require("../../errorMessages");
-const { encrypt } = require("../../utils/encryption");
+const { encrypt, hash } = require("../../utils/encryption");
+const accountTypeEnum = require("../../enum/accountType");
 
-const controller = ({
-    config,
-    userRepository,
-    accountRepository,
-    refreshTokenRepository
-}) => {
-
+const controller = ({ config, userRepository, accountRepository, refreshTokenRepository }) => {
     return {
         async getUser(req, res) {
             try {
@@ -48,7 +43,6 @@ const controller = ({
 
         async login(req, res) {
             try {
-
                 const { email, password } = req.body;
 
                 const [accountError, account] = await accountRepository.getByEmail(email);
@@ -56,7 +50,9 @@ const controller = ({
                 if (accountError) throw accountError;
 
                 if (!account)
-                    return res.status(404).send(generateErrorResponse(errorMessages.recordNotFound("Account not found.")));
+                    return res
+                        .status(404)
+                        .send(generateErrorResponse(errorMessages.recordNotFound("Account not found.")));
 
                 const decodedPassword = atob(password);
 
@@ -76,29 +72,39 @@ const controller = ({
 
                 if (loginError) throw loginError;
 
-                const [deleteRefreshTokenError, deleteRefreshToken] =
-                    await refreshTokenRepository.deleteRefreshToken(userId);
+                const oldRefreshToken = req.cookies?.refreshToken;
+
+                const [deleteRefreshTokenError, deleteRefreshToken] = await refreshTokenRepository.deleteRefreshToken({
+                    userId,
+                    token: oldRefreshToken
+                });
 
                 if (deleteRefreshTokenError) throw deleteRefreshTokenError;
 
-                let response = userProfile.getToken(
-                    config.security.accessTokenSecret,
-                    config.security.refreshTokenSecret
+                const { accessTokenSecret, accessTokenDurationInHour } = config.security;
+
+                const { accessToken, accessTokenExpiredAt, fingerprint } = userProfile.generateToken(
+                    accessTokenSecret,
+                    accessTokenDurationInHour
                 );
 
-                const refreshTokenData = new RefreshToken({
-                    userId: userId,
-                    token: response.refreshToken,
-                    expiredAt: response.refreshTokenExpiredAt
-                });
+                const refreshTokenData = new RefreshToken({ userId: userId });
 
                 const [createRefreshTokenError, createRefreshToken] =
                     await refreshTokenRepository.createRefreshToken(refreshTokenData);
 
                 if (createRefreshTokenError) throw createRefreshTokenError;
 
-                return res.status(200).send(generateSuccessResponse(response));
+                let response = { accessToken };
 
+                return res
+                    .status(200)
+                    .cookie("refreshToken", refreshTokenData.token, {
+                        expires: refreshTokenData.expiredAt,
+                        httpOnly: true
+                    })
+                    .cookie("fingerprint", fingerprint, { expires: accessTokenExpiredAt, httpOnly: true })
+                    .send(generateSuccessResponse(response));
             } catch (err) {
                 // console.log(err);
                 return res.status(500).send(generateErrorResponse());
@@ -107,7 +113,7 @@ const controller = ({
 
         async register(req, res) {
             try {
-                const { firstName, lastName, gender, dob, email, password, phoneCode, phoneNumber } = req.body;
+                const { firstName, lastName, dob, email, password, phoneCode, phoneNumber } = req.body;
 
                 const [existingAccountError, existingAccount] = await accountRepository.getByEmail(email);
 
@@ -130,7 +136,6 @@ const controller = ({
                 const userData = new User({
                     firstName,
                     lastName,
-                    gender,
                     dob: new Date(dob),
                     email,
                     phoneCode,
@@ -152,7 +157,37 @@ const controller = ({
                 if (createAccountError) throw createAccountError;
 
                 return res.status(200).send(generateSuccessResponse());
+            } catch (err) {
+                // console.log(err);
+                return res.status(500).send(generateErrorResponse());
+            }
+        },
 
+        async socialLogin(req, res) {
+            try {
+                const { email, firstName, phoneNumber, firebaseUid, providerId } = req.body;
+
+                const [existingAccountError, existingAccount] = await accountRepository.getByEmail(email);
+
+                if (existingAccountError) throw existingAccountError;
+
+                if (!existingAccount) {
+                    const userData = new User({
+                        firstName,
+                        lastName,
+                        gender,
+                        dob: new Date(dob),
+                        email,
+                        phoneCode,
+                        phoneNumber
+                    });
+
+                    const [createUserError, createUser] = await userRepository.createUser(userData);
+
+                    if (createUserError) throw createUserError;
+                }
+
+                return res.status(200).send(generateSuccessResponse());
             } catch (err) {
                 // console.log(err);
                 return res.status(500).send(generateErrorResponse());
@@ -179,7 +214,6 @@ const controller = ({
                 if (updateUserError) throw updateUserError;
 
                 return res.status(200).send(generateSuccessResponse());
-
             } catch (err) {
                 // console.log(err);
                 return res.status(500).send(generateErrorResponse());
@@ -224,5 +258,6 @@ module.exports = createController(controller)
     .get("/users", "getUser")
     .post("/users/login", "login")
     .post("/users/register", "register")
+    .post("/users/socialLogin", "socialLogin")
     .put("/users", "updateUser")
     .delete("/users/disable", "disableUser");

@@ -6,6 +6,7 @@ module.exports = class Account {
     constructor({
         userId,
         accType = accountTypeEnum.NORMAL,
+        firebaseUid = null,
         email,
         password = null,
         isDeleted = false,
@@ -19,6 +20,7 @@ module.exports = class Account {
 
         this.userId = userId;
         this.accType = accType;
+        this.firebaseUid = firebaseUid;
         this.email = email;
         this.password = password;
         this.isDeleted = isDeleted;

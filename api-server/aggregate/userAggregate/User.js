@@ -1,23 +1,24 @@
 const jwt = require("jsonwebtoken");
 const { ObjectId } = require("mongodb");
+const { hash } = require("../../utils/encryption");
 
 module.exports = class User {
     constructor({
         firstName,
-        lastName,
+        lastName = null,
         gender = null,
         dob,
         email,
-        phoneCode,
+        phoneCode = null,
         phoneNumber,
         lastLogin = null,
         isActivated = false,
         isEnable = true,
         createdAt = new Date(),
-        createdBy = new ObjectId("000000000000000000000000"),
+        createdBy = "000000000000000000000000",
         modifiedAt = new Date(),
-        modifiedBy = new ObjectId("000000000000000000000000"),
-        _id = null,
+        modifiedBy = "000000000000000000000000",
+        _id = null
     }) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -37,45 +38,34 @@ module.exports = class User {
     }
 
     getId() {
-        return this?._id.toString() ?? null;
+        return this._id?.toString() ?? null;
     }
 
     getFullName() {
-        return `${this.firstName} ${this.lastName}`;
+        return this.lastName ? `${this.firstName} ${this.lastName}` : this.firstName;
     }
 
-    getToken(accessTokenSecret, refreshTokenSecret) {
-        const accessTokenExpiredAt = new Date();
-        const refreshTokenExpiredAt = new Date()
+    /**
+     * Generates a JSON Web Token (JWT) for user authentication.
+     * @param {string} secret - The secret key for signing the token.
+     * @param {number} durationInHour - The duration of the token validity in hours.
+     * @returns {Object} An object containing the access token, the expiration date of the token, and a fingerprint generated from the user's ID and the current timestamp.
+     */
+    generateToken(secret, durationInHour) {
+        const fingerprint = hash(`${this.getId()}.${Date.now()}`);
 
-        accessTokenExpiredAt.setDate(accessTokenExpiredAt.getDate() + 1);
-        refreshTokenExpiredAt.setFullYear(accessTokenExpiredAt.getFullYear() + 1);
-
-        const accessTokenPayload = {
+        const payload = {
             id: this.getId(),
             firstName: this.firstName,
             lastName: this.lastName,
             dob: new Date(this.dob).toISOString(),
             email: this.email,
-            expiredAt: accessTokenExpiredAt
+            fingerprint
         };
 
-        const refreshTokenPayload = {
-            id: this.getId()
-        }
+        const accessTokenExpiredAt = new Date(Date.now() + durationInHour * 60 * 60 * 1000);
+        const accessToken = jwt.sign(payload, secret, { expiresIn: `${durationInHour}h` });
 
-        const accessToken = jwt.sign(accessTokenPayload, accessTokenSecret, { expiresIn: '1d' });
-        const refreshToken = jwt.sign(refreshTokenPayload, refreshTokenSecret, { expiresIn: '1y' });
-
-        return {
-            accessToken,
-            accessTokenExpiredAt,
-            refreshToken,
-            refreshTokenExpiredAt
-        };
-    }
-
-    verifyAuthentication(email, password) {
-        
+        return { accessToken, accessTokenExpiredAt, fingerprint };
     }
 };

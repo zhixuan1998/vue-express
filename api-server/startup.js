@@ -1,7 +1,9 @@
+const cors = require("cors");
 const helmet = require("helmet");
 const express = require("express");
 const winston = require("winston");
 require("winston-mongodb").MongoDB;
+const cookieParser = require("cookie-parser");
 const expressWinston = require("express-winston");
 const { loadControllers, scopePerRequest } = require("awilix-express");
 const { container, setup } = require("./container");
@@ -26,8 +28,10 @@ module.exports = async (config) => {
     await setup();
 
     var app = express();
+    app.use(cors());
     app.use(express.json());
     app.use(helmet());
+    app.use(cookieParser());
     app.use(logger);
     app.use(function (req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
@@ -37,7 +41,6 @@ module.exports = async (config) => {
     });
 
     // inject middlewares
-    
     app.use(require("./middleware/jwtMiddleware"));
     // app.use(require("./middleware/userMiddleware"));
 

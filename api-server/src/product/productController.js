@@ -94,6 +94,7 @@ const controller = ({
                 let response = products ? products.map(r => {
                     return {
                         productId: r.getId(),
+                        imageUrl: r.imageUrl,
                         name: r.name,
                         description: r.description,
                         unitPrice: parseFloat(r.unitPrice),
