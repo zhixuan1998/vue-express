@@ -6,22 +6,41 @@
         <slot name="right-content"></slot>
       </div>
     </div>
-    <custom-search-box v-if="searchBox" :searchOptions="searchOptions" @search="search" />
+    <custom-search-box
+      v-if="searchBox"
+      :searchOptions="searchOptions"
+      @search="search"
+      ref="searchBoxRef"
+    />
     <div v-if="hasMenu" class="menu-container">
-      <auth-menu v-if="!userStore.user" />
-      <user-menu v-if="userStore.user" />
+      <div class="item" v-if="!userStore.user">
+        <router-link :to="`/login?redirect=${route.fullPath}`">LOGIN</router-link>
+      </div>
+      <div class="item" v-if="!userStore.user">
+        <router-link :to="`/signup?redirect=${route.fullPath}`">SIGNUP</router-link>
+      </div>
+      <div class="item" v-if="userStore.user">
+        <router-link to="/user/purchase"
+          >{{ userStore.user.lastName }} {{ userStore.user.firstName }}
+        </router-link>
+      </div>
+      <div class="item item-cart">
+        <router-link to="/cart">
+          <font-awesome-icon :icon="faCartShopping" />
+        </router-link>
+        <span class="item-cart-count" v-if="true">1</span>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useSlots } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, useSlots } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '../stores';
+import { faCartShopping } from '@fortawesome/free-solid-svg-icons';
 
 import IconLogo from './icons/IconLogo.vue';
-import AuthMenu from './Header/AuthMenu.vue';
-import UserMenu from './Header/UserMenu.vue';
 
 const emits = defineEmits(['search']);
 
@@ -41,13 +60,16 @@ defineProps({
 });
 
 const slots = useSlots();
+const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
-
+const searchBoxRef = ref(null);
 
 async function search(value, searchArea) {
   emits('search', value, searchArea);
 }
+
+defineExpose({ searchBoxRef });
 </script>
 
 <style lang="scss" scoped>
@@ -58,9 +80,12 @@ async function search(value, searchArea) {
 
   display: grid;
   grid-auto-flow: column;
-  background: var(--theme-color-s);
+  background-color: var(--theme-color-s);
   grid-template: 'logo search-box menu' auto / 1fr minmax(280px, 40vw) 1fr;
   grid-gap: 10px 15px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
 
   &:not(.search_box-enabled) {
     grid-template: 'logo menu' auto;
@@ -110,23 +135,61 @@ async function search(value, searchArea) {
     justify-content: flex-end;
 
     .item {
+      --padding: 10px;
+
       user-select: none;
       text-align: center;
 
-      &:not(:last-child) {
+      padding-left: var(--padding);
+      padding-right: var(--padding);
+
+      > * {
+        transition: 0.15s;
+      }
+
+      &.item-cart {
+        position: relative;
+        padding-left: calc(var(--padding) * 2);
+
+        &:hover .item-cart-count {
+          background-color: rgba(36, 32, 104, 1);
+        }
+
+        .item-cart-count {
+          position: absolute;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          top: -12.5px;
+          left: 60%;
+
+          padding-left: var(--padding);
+          padding-right: var(--padding);
+          height: 22px;
+
+          border-radius: 50px;
+          background-color: #918fb3;
+          border: 1px solid var(--theme-color-s);
+
+          color: var(--theme-color-s);
+        }
+      }
+
+      &:has(+ .item-cart) {
         border-right: 1px solid var(--theme-color-l);
+        padding-right: calc(var(--padding) * 2);
       }
 
       a {
-        padding: 0 10px;
         text-decoration: none;
-        color: rgba(36, 32, 104, 0.5);
+        color: #918fb3;
         font-weight: 600;
         cursor: pointer;
+        white-space: nowrap;
+      }
 
-        &:hover {
-          color: rgba(36, 32, 104, 1);
-        }
+      &:hover a {
+        color: rgba(36, 32, 104, 1);
       }
     }
   }

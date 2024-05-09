@@ -121,25 +121,26 @@
           $messages.button.signup()
         }}</custom-button>
       </div>
-
       <custom-separator text="OR" />
-      <div></div>
+      <custom-social-login-button-group />
     </custom-form>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, inject } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { useRoute, useRouter } from 'vue-router';
+import { ref, reactive, onMounted, inject } from 'vue';
 import { required, requiredIf, email } from '@vuelidate/validators';
 
 import { useUserStore } from '../../stores';
 
+const $modal = inject('modal');
+const $messages = inject('messages');
+
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
-const $messages = inject('messages');
 const $repositories = inject('repositories');
 
 const user = reactive({
@@ -152,6 +153,8 @@ const user = reactive({
   password: '',
   confirmPassword: ''
 });
+
+const maxWidth = '800px';
 const phoneCodes = ref([]);
 
 onMounted(async () => {
@@ -177,19 +180,19 @@ async function signup() {
     return;
   }
 
-  const { confirmPassword, dob, ...signupData } = user;
+  const { dob, ...signupData } = user;
 
   const result = await userStore.register({
     ...signupData,
     dob: new Date(dob).toISOString()
   });
 
-  if (result) {
-    router.push({
-      name: 'ThankYou',
-      query: route.query?.redirect ? { redirect: route.query.redirect } : {}
-    });
-  }
+  result
+    ? router.push({
+        name: 'ThankYou',
+        query: route.query?.redirect ? { redirect: route.query.redirect } : {}
+      })
+    : $modal.open();
 }
 
 const $v = useVuelidate(
@@ -227,8 +230,6 @@ const $v = useVuelidate(
   },
   user
 );
-
-const maxWidth = '800px';
 </script>
 
 <style scoped>

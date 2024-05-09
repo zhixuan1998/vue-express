@@ -1,4 +1,4 @@
-import httpClient from '@/utils/axiosConfigurator';
+import httpClient from '@/utils/http';
 
 const categoryRepository = (config) => {
     return {

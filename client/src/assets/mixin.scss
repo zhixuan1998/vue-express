@@ -1,13 +1,13 @@
-@import './function.scss';
+@import "./function.scss";
 
 @mixin base-wrapper {
     width: 100%;
-    padding: 10px responsive-spacing()
+    padding: 10px responsive-spacing();
 }
 
-@mixin two-line-ellipsis {
+@mixin multiline-ellipsis($line-clamp: 2) {
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: $line-clamp;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }

@@ -1,7 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HomeView from '../views/Home/HomeView.vue';
-import { AuthBaseView, LoginView, SignupView, ThankYouView } from '../views/Auth';
-import { ProductBaseView, BrandView, CategoryView } from '../views/Product';
+
+const AuthBaseView = () => import('@/views/Auth/BaseView.vue');
+const LoginView = () => import('@/views/Auth/LoginView.vue');
+const SignupView = () => import('@/views/Auth/SignupView.vue');
+const ThankYouView = () => import('@/views/Auth/ThankYouView.vue');
+
+const HomeView = () => import('@/views/Home/HomeView.vue');
+
+const ProductBaseView = () => import('@/views/Product/BaseView.vue');
+const BrandView = () => import('@/views/Product/BrandView.vue');
+const CategoryView = () => import('@/views/Product/CategoryView.vue');
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,6 +17,7 @@ const router = createRouter({
         {
             path: '/',
             redirect: { path: '/home' },
+            component: ProductBaseView,
             children: [
                 {
                     path: '/home',

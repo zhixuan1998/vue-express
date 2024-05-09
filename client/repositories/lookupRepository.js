@@ -1,5 +1,4 @@
-
-import httpClient from '@/utils/axiosConfigurator';
+import httpClient from '@/utils/http';
 
 const lookupRepository = () => {
     return {
@@ -11,10 +10,10 @@ const lookupRepository = () => {
             return [
                 { key: 'brand', value: 'Search within brand' },
                 { key: 'category', value: 'Search within category' },
-                { key: 'product', value: 'Search product'}
-            ]
+                { key: 'product', value: 'Search product' }
+            ];
         }
-    }
-}
+    };
+};
 
 export default lookupRepository;

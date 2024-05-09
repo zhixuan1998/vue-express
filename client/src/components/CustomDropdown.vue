@@ -1,6 +1,10 @@
 <template>
   <div class="custom-dropdown" ref="dropdownEl">
-    <div class="dropdown-container" @click="openDropdown">
+    <div
+      class="dropdown-container"
+      @click="searchable ? openDropdown() : toggleDropdown()"
+      @mouseenter="menuOnHover ? openDropdown() : () => {}"
+    >
       <button class="dropdown-opener">
         <div>{{ displayValue }}</div>
         <font-awesome-icon
@@ -15,7 +19,6 @@
           <input
             :value="searchValue"
             :readonly="!searchable"
-            @mouseenter="menuOnHover ? openDropdown : () => {}"
             @input="
               (e) => {
                 searchValue = e.target.value;
@@ -101,6 +104,10 @@ function openDropdown() {
 
 function hideDropdown() {
   showDropdown.value = false;
+}
+
+function toggleDropdown() {
+  showDropdown.value = !showDropdown.value;
 }
 
 function selectItem(item) {

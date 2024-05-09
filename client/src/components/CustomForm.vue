@@ -23,7 +23,6 @@ const props = defineProps({
 });
 
 const [isMobile] = useMediaQuery([{ maxWidth: props.maxWidth }]);
-
 </script>
 
 <style lang="scss">
@@ -76,7 +75,7 @@ const [isMobile] = useMediaQuery([{ maxWidth: props.maxWidth }]);
   .body-section > *:not(.separator) {
     display: flex;
     flex-direction: column;
-    row-gap: 22px;
+    gap: 22px;
   }
 }
 

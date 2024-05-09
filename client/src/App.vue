@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100vh">
+  <div style="width: 100%; min-height: 100vh">
     <router-view></router-view>
     <div v-show="showModalOverlay" class="modal-overlay">
       <Transition name="bounce" @after-leave="hideModalOverlay">
@@ -38,7 +38,7 @@ const hideModalContainer = () => {
   showModalContainer.value = false;
 };
 
-const openModal = (obj) => {
+const openModalContainer = (obj) => {
   const {
     title = $messages.error.title.oops(),
     message = $messages.error.message.general(),
@@ -57,7 +57,7 @@ const resetModal = () => {
   modal.title = modal.message = modal.buttonText = '';
 };
 
-provide('modal', { hide: hideModalContainer, open: openModal });
+provide('modal', { hide: hideModalContainer, open: openModalContainer });
 </script>
 
 <style lang="scss" scoped>

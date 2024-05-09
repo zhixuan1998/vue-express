@@ -1,5 +1,4 @@
-import useMediaQuery from "./useMediaQuery"
+import useMediaQuery from './useMediaQuery';
+import useFirebaseAuth from './useFirebaseAuth';
 
-export {
-    useMediaQuery
-}
+export { useMediaQuery, useFirebaseAuth };

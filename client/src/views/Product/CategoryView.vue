@@ -6,24 +6,28 @@
 </template>
 
 <script setup>
-import { onMounted, ref, inject, computed } from 'vue';
+import { ref, watch, inject } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+
+const emits = defineEmits(['update'])
 
 const route = useRoute();
 const router = useRouter();
-const $repositories = inject('repositories');
 const $messages = inject('messages');
 
-const categories = ref([]);
+const props = defineProps({
+  categories: {
+    type: Array,
+    default: () => []
+  },
+})
 
-onMounted(async () => {
-  const categoryResults = await $repositories.categoryRepository.getAll({});
-  categories.value = categoryResults?.data?.data?.results ?? [];
-});
+const category = ref(null);
 
-const category = computed(() =>
-  categories.value.find((o) => o.categoryId === route.params.categoryId)
-);
+watch(() => route.params.categoryId, categoryId => {
+  category.value = props.categories.find((o) => o.categoryId === categoryId)
+  emits('update');
+})
 
 function goToCategory(item) {
   router.push({ name: 'ProductCategory', params: { categoryId: item.categoryId } });

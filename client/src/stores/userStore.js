@@ -1,11 +1,9 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
-import httpClient from '@/utils/axiosConfigurator';
+import httpClient from '@/utils/http';
 
 const useUserStore = defineStore('userStore', () => {
-    const user = ref(
-        localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null
-    );
+    const user = ref();
 
     const login = async ({ email, password }) => {
         const encodedPassword = btoa(password);
@@ -14,14 +12,10 @@ const useUserStore = defineStore('userStore', () => {
             .post(`users/login`, { email, password: encodedPassword })
             .then(async ({ data: { data } }) => {
                 localStorage.setItem('accessToken', data.accessToken);
-                localStorage.setItem('accessTokenExpiredAt', data.accessTokenExpiredAt);
-                localStorage.setItem('refreshToken', data.refreshToken);
-                localStorage.setItem('refreshTokenExpiredAt', data.refreshTokenExpiredAt);
-
                 await getUser();
                 return true;
             })
-            .catch((err) => {
+            .catch(() => {
                 return false;
             });
 
@@ -31,7 +25,7 @@ const useUserStore = defineStore('userStore', () => {
     const register = async ({ firstName, lastName, email, dob, phoneCode, phoneNumber, password }) => {
         const encodedPassword = btoa(password);
 
-       const success = await httpClient
+        const success = await httpClient
             .post(`users/register`, {
                 firstName,
                 lastName,
@@ -45,7 +39,28 @@ const useUserStore = defineStore('userStore', () => {
                 login({ email, password });
                 return true;
             })
-            .catch((err) => {
+            .catch(() => {
+                return false;
+            });
+
+        return success;
+    };
+
+    const socialLogin = async ({ firstName, email, phoneNumber, firebaseUid, providerId }) => {
+        const success = await httpClient
+            .post(`users/socialLogin`, {
+                firstName,
+                email,
+                phoneNumber,
+                firebaseUid,
+                providerId
+            })
+            .then(async ({ data: { data } }) => {
+                localStorage.setItem('accessToken', data.accessToken);
+                await getUser();
+                return true;
+            })
+            .catch(() => {
                 return false;
             });
 
@@ -53,15 +68,16 @@ const useUserStore = defineStore('userStore', () => {
     };
 
     const getUser = async () => {
-            await httpClient
+        if (!localStorage.getItem('accessToken')) return;
+
+        await httpClient
             .get(`users`)
             .then(({ data: { data } }) => {
                 if (!data) return;
 
                 user.value = data;
-                localStorage.setItem('user', JSON.stringify(data));
             })
-            .catch((err) => {});
+            .catch(() => {});
     };
 
     const logout = async () => {
@@ -69,14 +85,12 @@ const useUserStore = defineStore('userStore', () => {
 
         await httpClient.post(`users/logout`, { headers }).then(() => {
             localStorage.removeItem('accessToken');
-            localStorage.removeItem('accessTokenExpiredAt');
-            localStorage.removeItem('refreshToken');
-            localStorage.removeItem('refreshTokenExpiredAt');
-            localStorage.removeItem('user');
         });
     };
 
-    return { login, register, getUser, logout, user };
+    getUser();
+
+    return { login, register, socialLogin, getUser, logout, user };
 });
 
 export default useUserStore;

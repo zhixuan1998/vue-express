@@ -8,7 +8,9 @@ import CustomRadioGroup from './CustomRadioGroup.vue';
 import CustomFormControl from './CustomFormControl.vue';
 import CustomErrorMessage from './CustomErrorMessage.vue';
 import CustomListingSection from './CustomListingSection.vue';
+import CustomInfiniteLoading from './CustomInfiniteLoading.vue';
 import CustomMiniItemCarousel from './CustomMiniItemCarousel.vue';
+import CustomSocialLoginButtonGroup from './CustomSocialLoginButtonGroup.vue';
 
 export default {
     CustomForm,
@@ -21,5 +23,7 @@ export default {
     CustomFormControl,
     CustomErrorMessage,
     CustomListingSection,
-    CustomMiniItemCarousel
+    CustomInfiniteLoading,
+    CustomMiniItemCarousel,
+    CustomSocialLoginButtonGroup
 };

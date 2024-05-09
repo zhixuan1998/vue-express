@@ -3,29 +3,20 @@
     class="swiper-container"
     :slides-per-view="4"
     :slides-per-group="2"
-    :resize-observer="true"
+    breakpoints-base="container"
     :breakpoints="{
-      992: {
+      768: {
         slidesPerView: 10
       },
-      768: {
+      576: {
         slidesPerView: 8
       },
       400: {
         slidesPerView: 6
       }
     }"
-    @swiperslidechange="onSlideChange"
   >
-    <swiper-slide
-      v-for="(columnItems, i) of formattedItems"
-      :key="i"
-      class="swiper-slide"
-      :class="{
-        'border-right-invisible':
-          i === activeIndex + totalColumn - 1 || i === formattedItems.length - 1
-      }"
-    >
+    <swiper-slide v-for="(columnItems, i) of formattedItems" :key="i" class="swiper-slide">
       <div
         v-for="(item, j) of columnItems"
         :key="j"
@@ -34,7 +25,7 @@
       >
         <div class="item-image">
           <img
-            :src="`https://picsum.photos/id/${i * 2 + j + 100}/200/200`"
+            :src="item.imageUrl"
             class="rounded-circle"
             onerror="this.src='https://picsum.photos/200'"
           />
@@ -46,9 +37,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { computed } from 'vue';
 import { register } from 'swiper/element/bundle';
-import { useMediaQuery } from '@/hooks';
 
 register();
 
@@ -62,18 +52,6 @@ const props = defineProps({
   labelField: String
 });
 
-const [fourColumn, sixColumn, eightColumn] = useMediaQuery([
-  { maxWidth: '400px' },
-  { maxWidth: '768px' },
-  { maxWidth: '992px' }
-]);
-
-const activeIndex = ref(0);
-
-const totalColumn = computed(
-  () => (fourColumn.value && 4) || (sixColumn.value && 6) || (eightColumn.value && 8) || 10
-);
-
 const formattedItems = computed(() => {
   if (!props.items?.length) return [];
 
@@ -86,10 +64,6 @@ const formattedItems = computed(() => {
   return newItems;
 });
 
-function onSlideChange(swiper) {
-  activeIndex.value = swiper.detail[0].activeIndex;
-}
-
 function selectItem(item) {
   emits('select-item', item);
 }
@@ -97,21 +71,35 @@ function selectItem(item) {
 
 <style lang="scss" scoped>
 @import '../assets/mixin.scss';
-
 .swiper-container {
+  container-type: inline-size;
   width: 100%;
+
+  $container-breakpoints-columns:
+    'width > 768px' 10,
+    '576px <= width < 768px' 8,
+    '400px <= width < 576px' 6,
+    'width < 400px' 4;
+
+  @mixin rightmost-border-right-transparent($container-breakpoint, $nth) {
+    @container (#{$container-breakpoint}) {
+      .swiper-slide-active ~ .swiper-slide:nth-of-type(#{$nth}) .item-container {
+        border-right-color: rgba(0, 0, 0, 0);
+
+        &:hover {
+          border-right-color: var(--border-color);
+        }
+      }
+    }
+  }
+
+  @each $breakpoint, $column in $container-breakpoints-columns {
+    @include rightmost-border-right-transparent($breakpoint, $column);
+  }
 
   .swiper-slide {
     --border-color: rgba(228, 206, 255, 0.5);
     --item-border: 1px solid var(--border-color);
-
-    &.border-right-invisible .item-container {
-      border-right-color: rgba(0, 0, 0, 0);
-    }
-
-    &.border-right-invisible .item-container:hover {
-      border-right-color: var(--border-color);
-    }
 
     @media (width < 576px) {
       border-bottom: var(--item-border);
@@ -151,7 +139,7 @@ function selectItem(item) {
       }
 
       .item-label {
-        @include two-line-ellipsis;
+        @include multiline-ellipsis(2);
         margin: 0;
         height: 40px;
         text-align: center;

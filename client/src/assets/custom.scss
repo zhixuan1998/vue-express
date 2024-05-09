@@ -2,18 +2,16 @@
 @import "./font-face.css";
 
 :root {
-    --theme-color-s: #e4ceff;
     /* rgba(228, 206, 255, 1) */
-    --theme-color-m: #c1adff;
+    --theme-color-s: #e4ceff;
     /* rgba(193, 173, 255, 1); */
-    --theme-color-l: #b9a5fe;
+    --theme-color-m: #c1adff;
     /* rgba(185, 165, 254, 1) */
-    --theme-color-xl: #242068;
+    --theme-color-l: #b9a5fe;
+    /* rgba(36, 32, 104, 0.5) */
+    --theme-color-xl-50: #918fb3;
     /* rgba(36, 32, 104, 1) */
-}
-
-* {
-    font-family: Poppins, Roboto, sans-serif;
+    --theme-color-xl: #242068;
 }
 
 body {
@@ -40,11 +38,11 @@ input {
         font-family: NotoSans-Regular, "Microsoft JhengHei UI", Poppins, Roboto, sans-serif;
     }
 
-    & > * {
+    > * {
         margin: auto;
     }
 
-    [class$="-section"] {
+    [class*="-section"] {
         width: 100%;
         background-color: rgba(0, 0, 0, 0);
     }
@@ -92,7 +90,7 @@ input {
                 padding: 10px;
 
                 .item-name {
-                    @include two-line-ellipsis;
+                    @include multiline-ellipsis(2);
                     font-size: 14px;
                 }
 

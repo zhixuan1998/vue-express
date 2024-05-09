@@ -43,13 +43,13 @@
         <p class="forgot-password">{{ $messages.label.forgotPassword() }}</p>
       </div>
       <custom-separator text="OR" />
-      <div></div>
+      <custom-social-login-button-group />
     </custom-form>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, inject } from 'vue';
+import { reactive, inject } from 'vue';
 import { useVuelidate } from '@vuelidate/core';
 import { useRoute, useRouter } from 'vue-router';
 import { required, email } from '@vuelidate/validators';
@@ -57,13 +57,13 @@ import { required, email } from '@vuelidate/validators';
 import { useMediaQuery } from '../../hooks';
 import { useUserStore } from '../../stores';
 
-const $messages = inject('messages');
 const $modal = inject('modal');
+const $messages = inject('messages');
 
+const maxWidth = '450px';
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
-const maxWidth = '450px';
 const [isMobile] = useMediaQuery([{ maxWidth }]);
 
 const credentials = reactive({
@@ -71,14 +71,14 @@ const credentials = reactive({
   password: ''
 });
 
-const resetForm = () => {
+function resetForm() {
   credentials.email = '';
   credentials.password = '';
 
   $v.value.$reset();
-};
+}
 
-const login = async () => {
+async function login() {
   $v.value.$touch();
 
   if (!(await $v.value.$validate())) {
@@ -90,13 +90,12 @@ const login = async () => {
     password: credentials.password
   });
 
-  if (!success) {
-    $modal.open({ message: $messages.error.message.invalidAuth() });
-    return resetForm();
-  }
+  success
+    ? router.push({ path: route.query?.redirect ?? '/' })
+    : $modal.open({ message: $messages.error.message.invalidAuth() });
 
-  router.push({ path: route.query?.redirect ?? '/' });
-};
+  return resetForm();
+}
 
 const $v = useVuelidate(
   {

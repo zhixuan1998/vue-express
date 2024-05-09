@@ -50,6 +50,10 @@ const props = defineProps({
   }
 });
 
+onMounted(() => {
+  initDropdownValue();
+});
+
 function search() {
   if (
     !inputValue.value ||
@@ -62,9 +66,9 @@ function search() {
   previousDropdownValue = dropdownValue.value;
 }
 
-onMounted(() => {
-  initDropdownValue();
-});
+function clearInput() {
+  inputValue.value = '';
+}
 
 function initDropdownValue() {
   if (!props.searchOptions?.length) return;
@@ -78,6 +82,8 @@ watch(
   () => props.searchOptions,
   () => initDropdownValue()
 );
+
+defineExpose({ clearInput });
 </script>
 
 <style lang="scss">

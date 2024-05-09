@@ -20,8 +20,6 @@ app.component('FontAwesomeIcon', FontAwesomeIcon);
 app.provide('messages', messages);
 app.provide('repositories', repositories(config));
 
-Object.keys(components).forEach((name) => {
-    app.component(name, components[name]);
-});
+Object.keys(components).forEach((name) => app.component(name, components[name]));
 
 app.mount('#app');
