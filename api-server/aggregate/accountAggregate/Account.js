@@ -1,8 +1,8 @@
-const { ObjectId } = require("mongodb");
-const accountTypeEnum = require("../../enum/accountType");
-const { encrypt } = require("../../utils/encryption");
+import { ObjectId } from "mongodb";
+import accountTypeEnum from "../../enum/accountType.js";
+import { encrypt } from "../../utils/encryption.js";
 
-module.exports = class Account {
+export default class Account {
     constructor({
         userId,
         accType = accountTypeEnum.NORMAL,

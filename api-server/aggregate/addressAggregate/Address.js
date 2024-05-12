@@ -1,6 +1,6 @@
-const { ObjectId } = require("mongodb");
+import { ObjectId } from "mongodb";
 
-module.exports = class Address {
+export default class Address {
     constructor({
         userId,
         title,

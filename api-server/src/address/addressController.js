@@ -1,7 +1,7 @@
-const { createController } = require("awilix-express")
-const { generateSuccessResponse, generateErrorResponse } = require('../../utils/responseParser');
-const { Address } = require('../../aggregate');
-const errorMessages = require('../../errorMessages');
+import { createController } from "awilix-express";
+import { generateSuccessResponse, generateErrorResponse } from "../../utils/responseParser.js";
+import errorMessages from "../../errorMessages.js";
+import { Address } from "../../aggregate/index.js";
 
 const controller = ({
     config,
@@ -98,7 +98,7 @@ const controller = ({
     }
 }
 
-module.exports = createController(controller)
+export default createController(controller)
     .prefix('/api')
     .post('/user/addresses', 'createAddress')
     .get('/user/addresses', 'getUserAddresses')

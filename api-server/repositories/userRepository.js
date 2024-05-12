@@ -1,11 +1,7 @@
-const { ObjectId } = require('mongodb');
-const { User } = require("../aggregate");
+import { ObjectId } from "mongodb";
+import { User } from "../aggregate/index.js";
 
-module.exports = ({
-    collections: {
-        users
-    }
-}) => {
+export default function ({ collections: { users } }) {
     return {
         async createUser(user) {
             const userData = {
@@ -23,7 +19,7 @@ module.exports = ({
                 createdBy: user.createdBy,
                 modifiedAt: user.modifiedAt,
                 modifiedBy: user.modifiedBy
-            }
+            };
 
             try {
                 const result = await users.insertOne(userData);
@@ -33,7 +29,6 @@ module.exports = ({
                 const insertedResult = await users.findOne({ _id: insertedId });
 
                 return [null, new User(insertedResult)];
-
             } catch (error) {
                 return [error];
             }
@@ -47,10 +42,9 @@ module.exports = ({
                 });
 
                 return [null, result ? new User(result) : null];
-
             } catch (error) {
                 return [error];
-            }           
+            }
         },
 
         async getByPhone(phoneCode, phoneNumber) {
@@ -62,7 +56,6 @@ module.exports = ({
                 });
 
                 return [null, result ? new User(result) : null];
-
             } catch (error) {
                 return [error];
             }
@@ -87,9 +80,8 @@ module.exports = ({
                 );
 
                 return [null, result.modifiedCount ? true : false];
-
             } catch (error) {
-                retur [error];
+                retur[error];
             }
         },
 
@@ -97,21 +89,24 @@ module.exports = ({
             try {
                 const date = new Date();
 
-                const result = await users.updateOne({
-                    _id: new ObjectId(userId),
-                    isEnable: true
-                }, {
-                    $set: {
-                        lastLogin: date,
-                        modifiedAt: date,
-                        modifiedBy: new ObjectId("000000000000000000000000")
+                const result = await users.updateOne(
+                    {
+                        _id: new ObjectId(userId),
+                        isEnable: true
+                    },
+                    {
+                        $set: {
+                            lastLogin: date,
+                            modifiedAt: date,
+                            modifiedBy: new ObjectId("000000000000000000000000")
+                        }
                     }
-                })
+                );
 
-                return [null, result.modifiedCount ? true : false]
+                return [null, result.modifiedCount ? true : false];
             } catch (error) {
                 return [error];
             }
-        } 
-    }
+        }
+    };
 }

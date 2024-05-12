@@ -1,12 +1,13 @@
-require("dotenv-flow").config();
+import 'dotenv-flow/config';
 
-const debug = require("debug");
-const http = require("http");
-const config = require("./appsettings");
+import debug from "debug";
+import http from "http";
+import config from "./appsettings.js";
+import startup from "./startup.js";
 
 async function main() {
     try {
-        const app = await require("./startup.js")(config);
+        const app = await startup(config);
         http.createServer(app).listen(config.port, () => {
             console.log(`Listening port: ${config.port}`);
             debug(`Listening port: ${config.port}`);
@@ -18,3 +19,13 @@ async function main() {
 }
 
 main();
+
+// import { onRequest } from 'firebase-functions/v2/https';
+// import startup from './startup.js';
+// import config from './appsettings.js';
+
+// export const api = await (async function() {
+//     const app = await startup(config);
+
+//     return onRequest(app);
+// })()

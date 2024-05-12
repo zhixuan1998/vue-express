@@ -1,7 +1,7 @@
-const { createController } = require("awilix-express");
-const { generateSuccessResponse, generateErrorResponse } = require("../../utils/responseParser");
-const errorMessages = require("../../errorMessages");
-const followTypeEnum = require("../../enum/followType");
+import { createController } from "awilix-express";
+import { generateSuccessResponse, generateErrorResponse } from "../../utils/responseParser.js";
+import errorMessages from "../../errorMessages.js";
+import followTypeEnum from "../../enum/followType.js";
 
 const controller = ({
     config,
@@ -114,6 +114,6 @@ const controller = ({
     }
 }
 
-module.exports = createController(controller)
+export default createController(controller)
     .prefix("/api")
     .post("/users/products", "getProducts")

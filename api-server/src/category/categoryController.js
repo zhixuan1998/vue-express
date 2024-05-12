@@ -1,6 +1,6 @@
-const { createController } = require("awilix-express");
-const { generateSuccessResponse, generateErrorResponse } = require("../../utils/responseParser");
-const errorMessages = require("../../errorMessages");
+import { createController } from "awilix-express";
+import { generateSuccessResponse, generateErrorResponse } from "../../utils/responseParser.js";
+import errorMessages from "../../errorMessages.js";
 
 const controller = ({ config, categoryRepository }) => {
     return {
@@ -24,11 +24,10 @@ const controller = ({ config, categoryRepository }) => {
 
                 return res.status(200).send(generateSuccessResponse(response));
             } catch (err) {
-                // console.log(err);
+                console.log(err);
                 return res.status(500).send(generateErrorResponse());
             }
         }
     };
 };
-
-module.exports = createController(controller).prefix("/api").get("/users/categories", "getCategories");
+export default createController(controller).prefix("/api").get("/users/categories", "getCategories");

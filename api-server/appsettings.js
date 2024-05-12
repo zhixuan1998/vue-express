@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     port: 8080,
     mongodb: {
         default: process.env.MONGODB__DEFAULT,
@@ -12,7 +12,12 @@ module.exports = {
             iv: process.env.SECURITY__ENCRYPTION__IV
         }
     },
-    firebase: {
-        apiKey: process.env.FIREBASE__API_KEY
+    firebaseconfig: {
+        apiKey: process.env.FIREBASECONFIG__API_KEY,
+        authDomain: process.env.FIREBASECONFIG__AUTH_DOMAIN,
+        projectId: process.env.FIREBASECONFIG__PROJECT_ID,
+        storageBucket: process.env.FIREBASECONFIG__STORAGE_BUCKET,
+        messagingSenderId: process.env.FIREBASECONFIG__MESSAGING_SENDER_ID,
+        appId: process.env.FIREBASECONFIG__APP_ID
     }
 };

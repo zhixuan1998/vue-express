@@ -3,4 +3,4 @@ const followType = {
     SHOP: 'shop'
 }
 
-module.exports = followType;
+export default followType;

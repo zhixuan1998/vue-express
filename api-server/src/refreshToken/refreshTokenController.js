@@ -1,8 +1,7 @@
-const { createController } = require("awilix-express");
-const { generateSuccessResponse, generateErrorResponse } = require("../../utils/responseParser");
-const errorMessages = require("../../errorMessages");
-const { RefreshToken } = require("../../aggregate");
-const { http } = require("winston");
+import { createController } from "awilix-express";
+import { generateSuccessResponse, generateErrorResponse } from "../../utils/responseParser.js";
+import errorMessages from "../../errorMessages.js";
+import { RefreshToken } from "../../aggregate/index.js";
 
 const controller = ({ config, userRepository, refreshTokenRepository }) => {
     return {
@@ -60,5 +59,4 @@ const controller = ({ config, userRepository, refreshTokenRepository }) => {
         }
     };
 };
-
-module.exports = createController(controller).prefix("/api").post("/users/token", "regenerateToken");
+export default createController(controller).prefix("/api").post("/users/token", "regenerateToken");

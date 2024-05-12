@@ -1,15 +1,16 @@
-const jwt = require("jsonwebtoken");
-const { generateErrorResponse } = require("../utils/responseParser");
-const errorMessages = require("../errorMessages");
-const config = require("../appsettings");
+import jwt from "jsonwebtoken";
+import { generateErrorResponse } from "../utils/responseParser.js";
+import errorMessages from "../errorMessages.js";
+import config from "../appsettings.js";
 
 const { verify, TokenExpiredError } = jwt;
 
-module.exports = (req, res, next) => {
+export default function (req, res, next) {
     try {
+
         const authToken = req.headers["authorization"];
 
-        const [authType, token] = authToken.split(" ");
+        const [authType, token] = authToken?.split(" ") ?? [];
 
         if (req.path === "/api/users/token" || authType !== "Bearer" || !token) {
             return next();
@@ -42,7 +43,7 @@ module.exports = (req, res, next) => {
             next();
         });
     } catch (err) {
-        // console.log(err);
+        console.log(err);
         return res.status(500).send(generateErrorResponse());
     }
-};
+}

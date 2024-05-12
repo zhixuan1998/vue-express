@@ -1,6 +1,6 @@
-const { ObjectId } = require("mongodb");
+import { ObjectId } from "mongodb";
 
-module.exports = ({ collections: { phoneCodes } }) => {
+export default function ({ collections: { phoneCodes } }) {
     return {
         async getCountryPhoneCodes() {
             try {
@@ -12,4 +12,4 @@ module.exports = ({ collections: { phoneCodes } }) => {
             }
         }
     };
-};
+}

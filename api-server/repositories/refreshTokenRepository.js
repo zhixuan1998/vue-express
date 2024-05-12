@@ -1,7 +1,7 @@
-const { ObjectId } = require("mongodb");
-const { RefreshToken } = require("../aggregate");
+import { ObjectId } from "mongodb";
+import { RefreshToken } from "../aggregate/index.js";
 
-module.exports = ({ collections: { refreshTokens } }) => {
+export default function ({ collections: { refreshTokens } }) {
     return {
         async createRefreshToken(refreshToken) {
             const refreshTokenData = {
@@ -62,4 +62,4 @@ module.exports = ({ collections: { refreshTokens } }) => {
             }
         }
     };
-};
+}

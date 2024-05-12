@@ -1,6 +1,6 @@
-const { createController } = require("awilix-express");
-const { generateSuccessResponse, generateErrorResponse } = require("../../utils/responseParser");
-const errorMessages = require("../../errorMessages");
+import { createController } from "awilix-express";
+import { generateSuccessResponse, generateErrorResponse } from "../../utils/responseParser.js";
+import errorMessages from "../../errorMessages.js";
 
 const controller = ({
     config,
@@ -29,7 +29,6 @@ const controller = ({
         }
     }
 }
-
-module.exports = createController(controller)
+export default createController(controller)
     .prefix("/api/users/lookup")
     .get("/countries/phoneCodes", "getCountryPhoneCodes")

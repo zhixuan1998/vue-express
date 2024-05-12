@@ -1,13 +1,7 @@
-const { ObjectId } = require('mongodb');
-const { Account } = require("../aggregate");
+import { ObjectId } from "mongodb";
+import { Account } from "../aggregate/index.js";
 
-module.exports = ({
-    collections: {
-        accounts,
-        brands,
-        products,
-    }
-}) => {
+export default function ({ collections: { accounts, brands, products } }) {
     return {
         async createAccount(account) {
             const userData = {
@@ -20,7 +14,7 @@ module.exports = ({
                 createdBy: account.createdBy,
                 modifiedAt: account.modifiedAt,
                 modifiedBy: account.modifiedBy
-            }
+            };
 
             try {
                 const result = await accounts.insertOne(userData);
@@ -30,24 +24,31 @@ module.exports = ({
                 const insertedResult = await accounts.findOne({ _id: insertedId });
 
                 return [null, new Account(insertedResult)];
-
             } catch (error) {
                 return [error];
             }
         },
 
-        async getByEmail(email) {
+        async get({ email, firebaseUid }) {
             try {
-                const result = await accounts.findOne({
-                    email,
+                let query = {
                     isDeleted: false
-                });
+                };
+
+                if (email) {
+                    query.email = email;
+                }
+
+                if (firebaseUid) {
+                    query.firebaseUid = firebaseUid;
+                }
+
+                const result = await accounts.findOne(query);
 
                 return [null, result ? new Account(result) : null];
-
             } catch (error) {
                 return [error];
-            }           
+            }
         },
 
         async deleteAccounts(userId) {
@@ -55,7 +56,7 @@ module.exports = ({
                 const result = await accounts.updateMany(
                     {
                         _id: userId,
-                        isDeleted: false,
+                        isDeleted: false
                     },
                     {
                         $set: {
@@ -64,13 +65,12 @@ module.exports = ({
                             isDeleted: true
                         }
                     }
-                )
+                );
 
                 return [null, result.modifiedCount ? true : false];
             } catch (error) {
                 return [error];
             }
-        },
-        
-    }
+        }
+    };
 }

@@ -1,13 +1,8 @@
-const { ObjectId } = require('mongodb');
-const { Brand } = require("../aggregate");
-const followTypeEnum = require("../enum/followType");
+import { ObjectId } from "mongodb";
+import { Brand } from "../aggregate/index.js";
+import followTypeEnum from "../enum/followType.js";
 
-module.exports = ({
-    collections: {
-        brands,
-        follows,
-    }
-}) => {
+export default function ({ collections: { brands, follows } }) {
     return {
         async getAll({ search, brandIds }) {
             let query = {
@@ -16,18 +11,17 @@ module.exports = ({
             };
 
             if (search) {
-                query.name = { $regex: '^' + search, $options: 'i' }
+                query.name = { $regex: "^" + search, $options: "i" };
             }
 
             if (brandIds?.length) {
-                query._id = { $in: brandIds.map(id => new ObjectId(id)) };
+                query._id = { $in: brandIds.map((id) => new ObjectId(id)) };
             }
 
             try {
                 const result = await brands.find(query).toArray();
 
-                return [null, result.length ? result.map(r => new Brand(r)) : null];
-
+                return [null, result.length ? result.map((r) => new Brand(r)) : null];
             } catch (error) {
                 return [error];
             }
@@ -35,40 +29,41 @@ module.exports = ({
 
         async getUserFollowed(userId) {
             try {
-                const result = await follows.aggregate([
-                    {
-                        $match: {
-                            userId: new ObjectId(userId),
-                            type: followTypeEnum.BRAND,
-                            isDeleted: false
-                        }
-                    },
-                    {
-                        $lookup: {
-                            from: brands.collectionName,
-                            let: { brandId: "$referenceId" },
-                            as: "brands",
-                            pipeline: [
-                                {
-                                    $match: {
-                                        $expr: { $eq: ["$brandId", "$_id"] },
-                                        isEnable: true,
-                                        isDeleted: false
+                const result = await follows
+                    .aggregate([
+                        {
+                            $match: {
+                                userId: new ObjectId(userId),
+                                type: followTypeEnum.BRAND,
+                                isDeleted: false
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: brands.collectionName,
+                                let: { brandId: "$referenceId" },
+                                as: "brands",
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: { $eq: ["$brandId", "$_id"] },
+                                            isEnable: true,
+                                            isDeleted: false
+                                        }
                                     }
-                                },
-                            ]
-                        }
-                    },
-                    { $match: { "brands.0": { $exists: true } } },
-                    { $unwind: "$brands" },
-                    { $replaceRoot: { newRoot: "brands" } }
-                ]).toArray();
+                                ]
+                            }
+                        },
+                        { $match: { "brands.0": { $exists: true } } },
+                        { $unwind: "$brands" },
+                        { $replaceRoot: { newRoot: "brands" } }
+                    ])
+                    .toArray();
 
-                return [null, result.length ? result.map(r => new Brand(r)) : null];
-
+                return [null, result.length ? result.map((r) => new Brand(r)) : null];
             } catch (error) {
                 return [error];
             }
         }
-    }
+    };
 }

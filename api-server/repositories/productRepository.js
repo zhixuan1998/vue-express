@@ -1,9 +1,9 @@
-const { ObjectId } = require("mongodb");
-const { Product } = require("../aggregate");
-const sortDirectionEnum = require("../enum/sortDirection");
-const productSortByEnum = require("../enum/productSortBy");
+import { ObjectId } from "mongodb";
+import { Product } from "../aggregate/index.js";
+import sortDirectionEnum from "../enum/sortDirection.js";
+import productSortByEnum from "../enum/productSortBy.js";
 
-module.exports = ({ collections: { products } }) => {
+export default function ({ collections: { products } }) {
     return {
         async getAll({
             search,
@@ -55,4 +55,4 @@ module.exports = ({ collections: { products } }) => {
             }
         }
     };
-};
+}

@@ -3,4 +3,4 @@ const sortDirection = {
     DESC: -1
 }
 
-module.exports = sortDirection;
+export default sortDirection;

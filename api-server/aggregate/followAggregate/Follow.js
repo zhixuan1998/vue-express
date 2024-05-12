@@ -1,6 +1,6 @@
-const { ObjectId } = require("mongodb");
+import { ObjectId } from "mongodb";
 
-module.exports = class Follow {
+export default class Follow {
     constructor({
         userId,
         type,

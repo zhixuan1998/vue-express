@@ -1,14 +1,20 @@
-const cors = require("cors");
-const helmet = require("helmet");
-const express = require("express");
-const winston = require("winston");
-require("winston-mongodb").MongoDB;
-const cookieParser = require("cookie-parser");
-const expressWinston = require("express-winston");
-const { loadControllers, scopePerRequest } = require("awilix-express");
-const { container, setup } = require("./container");
+import cors from "cors";
+import helmet from "helmet";
+import express from "express";
+import winston from "winston";
+import MongoDB from "winston-mongodb";
+import cookieParser from "cookie-parser";
+import expressWinston from "express-winston";
+import { loadControllers, scopePerRequest, inject } from "awilix-express";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { container, setup } from "./container.js";
 
-module.exports = async (config) => {
+
+import jwtMiddleware from "./middleware/jwtMiddleware.js";
+import userMiddleware from "./middleware/userMiddleware.js";
+
+export default async function (config) {
     const logger = expressWinston.logger({
         transports: [
             // new winston.transports.Console(),
@@ -41,11 +47,18 @@ module.exports = async (config) => {
     });
 
     // inject middlewares
-    app.use(require("./middleware/jwtMiddleware"));
-    // app.use(require("./middleware/userMiddleware"));
+    app.use(jwtMiddleware);
+    // app.use(userMiddleware);
+
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
 
     app.use(scopePerRequest(container));
     app.use(loadControllers("src/*/*Controller.js", { cwd: __dirname }));
 
+    app.get('/users', (req, res) => {
+        res.send('Hello World!');
+    });
+
     return app;
-};
+}

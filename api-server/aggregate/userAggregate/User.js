@@ -1,13 +1,13 @@
-const jwt = require("jsonwebtoken");
-const { ObjectId } = require("mongodb");
-const { hash } = require("../../utils/encryption");
+import jwt from "jsonwebtoken";
+import { ObjectId } from "mongodb";
+import { hash } from "../../utils/encryption.js";
 
-module.exports = class User {
+export default class User {
     constructor({
         firstName,
         lastName = null,
         gender = null,
-        dob,
+        dob = null,
         email,
         phoneCode = null,
         phoneNumber,
@@ -15,9 +15,9 @@ module.exports = class User {
         isActivated = false,
         isEnable = true,
         createdAt = new Date(),
-        createdBy = "000000000000000000000000",
+        createdBy = ObjectId("000000000000000000000000"),
         modifiedAt = new Date(),
-        modifiedBy = "000000000000000000000000",
+        modifiedBy = ObjectId("000000000000000000000000"),
         _id = null
     }) {
         this.firstName = firstName;

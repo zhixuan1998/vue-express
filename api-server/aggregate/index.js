@@ -1,17 +1,15 @@
-const Account = require("./accountAggregate/Account");
-const Address = require("./addressAggregate/Address");
-const Brand = require("./brandAggregate/Brand");
-const Category = require("./categoryAggregate/Category");
-const Follow = require("./followAggregate/Follow");
-const Order = require("./orderAggregate/Order");
-const OrderDetail = require("./orderDetailAggregate/OrderDetail");
-const Product = require("./productAggregate/Product");
-const RefreshToken = require("./refreshTokenAggregate/RefreshToken");
-const Shop = require("./shopAggregate/Shop");
-const User = require("./userAggregate/User");
+import Account from "./accountAggregate/Account.js";
+import Address from "./addressAggregate/Address.js";
+import Brand from "./brandAggregate/Brand.js";
+import Category from "./categoryAggregate/Category.js";
+import Follow from "./followAggregate/Follow.js";
+import Order from "./orderAggregate/Order.js";
+import OrderDetail from "./orderDetailAggregate/OrderDetail.js";
+import Product from "./productAggregate/Product.js";
+import RefreshToken from "./refreshTokenAggregate/RefreshToken.js";
+import User from "./userAggregate/User.js";
 
-
-module.exports = {
+export {
     Account,
     Address,
     Brand,
@@ -21,6 +19,5 @@ module.exports = {
     OrderDetail,
     Product,
     RefreshToken,
-    Shop,
     User
 };

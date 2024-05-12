@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "program.js",
+  "type": "module",
   "scripts": {
     "dev": "node program",
-    "watch": "nodemon program"
+    "watch": "nodemon program",
+    "firebase-deploy": "firebase deploy --only functions:api"
   },
   "author": "",
   "license": "ISC",
@@ -23,7 +25,9 @@
     "dotenv-flow": "^4.1.0",
     "express": "^4.18.2",
     "express-winston": "^4.2.0",
-    "firebase": "^10.11.0",
+    "firebase": "^10.11.1",
+    "firebase-admin": "^12.1.0",
+    "firebase-functions": "^5.0.1",
     "glob": "^10.3.10",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
@@ -35,5 +39,8 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.0"
+  },
+  "engines": {
+    "node": "18"
   }
 }

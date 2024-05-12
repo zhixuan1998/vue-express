@@ -1,7 +1,7 @@
 const accountType = {
-    NORMAL: 0,
-    FACEBOOK: 1,
-    GOOGLE: 2
+    NORMAL: 'normal',
+    FACEBOOK: 'facebook',
+    GOOGLE: 'google'
 }
 
-module.exports = accountType;
+export default accountType;

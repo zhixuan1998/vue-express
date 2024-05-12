@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+import crypto from "crypto";
 
 function encrypt(message, key, iv) {
     let cipher = crypto.createCipheriv("aes-256-cbc", key, Buffer.from(iv, "hex"));
@@ -16,8 +16,4 @@ function hash(message, algorithm = "sha256") {
     return crypto.createHash(algorithm).update(message).digest("hex");
 }
 
-module.exports = {
-    encrypt,
-    decrypt,
-    hash
-};
+export { encrypt, decrypt, hash };

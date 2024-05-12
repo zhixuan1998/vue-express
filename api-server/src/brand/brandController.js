@@ -1,8 +1,8 @@
-const { createController } = require("awilix-express");
-const { generateSuccessResponse, generateErrorResponse } = require("../../utils/responseParser");
-const errorMessages = require("../../errorMessages");
-const { Brand } = require("../../aggregate");
-const followTypeEnum = require("../../enum/followType");
+import { createController } from "awilix-express";
+import { generateSuccessResponse, generateErrorResponse } from "../../utils/responseParser.js";
+import errorMessages from "../../errorMessages.js";
+import { Brand } from "../../aggregate/index.js";
+import followTypeEnum from "../../enum/followType.js";
 
 const controller = ({ config, brandRepository, followRepository }) => {
     return {
@@ -66,7 +66,7 @@ const controller = ({ config, brandRepository, followRepository }) => {
     };
 };
 
-module.exports = createController(controller)
+export default createController(controller)
     .prefix("/api")
     .get("/users/brands", "getBrands")
     .get("/users/followedBrands", "getUserFollowedBrands");

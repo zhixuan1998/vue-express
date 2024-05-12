@@ -1,9 +1,9 @@
-const { ObjectId } = require("mongodb");
-const crypto = require("crypto");
+import { ObjectId } from "mongodb";
+import crypto from "crypto";
 
 const oneYearInMs = 1 * 365 * 24 * 60 * 60 * 1000;
 
-module.exports = class RefreshToken {
+export default class RefreshToken {
     constructor({
         userId,
         token,

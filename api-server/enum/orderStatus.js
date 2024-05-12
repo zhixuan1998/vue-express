@@ -5,4 +5,4 @@ const orderStatus = {
     DELIVERED: "delivered"
 }
 
-module.exports = orderStatus;
+export default orderStatus;

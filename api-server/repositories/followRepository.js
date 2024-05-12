@@ -1,14 +1,8 @@
-const { ObjectId } = require('mongodb');
-const followTypeEnum = require("../enum/followType");
-const { Follow } = require("../aggregate");
+import { ObjectId } from "mongodb";
+import { Follow } from "../aggregate/index.js";
+import followTypeEnum from "../enum/followType.js";
 
-module.exports = ({
-    collections: {
-        brands,
-        follows,
-        shops,
-    }
-}) => {
+export default function ({ collections: { brands, follows, shops } }) {
     return {
         async add(userId, follow) {
             const followData = {
@@ -19,8 +13,8 @@ module.exports = ({
                 createdAt: follow.createdAt,
                 createdBy: new ObjectId(userId),
                 modifiedAt: follow.modifiedAt,
-                modifiedBy: new ObjectId(userId),
-            }
+                modifiedBy: new ObjectId(userId)
+            };
 
             try {
                 const result = await follows.insertOne(followData);
@@ -30,7 +24,6 @@ module.exports = ({
                 const insertedResult = await follows.findOne({ _id: insertedId });
 
                 return [null, new Follow(insertedResult)];
-
             } catch (error) {
                 return [error];
             }
@@ -41,7 +34,7 @@ module.exports = ({
                 let initQuery = {
                     userId: new ObjectId(userId),
                     isDeleted: false
-                }
+                };
 
                 let pipeline = [];
 
@@ -71,7 +64,7 @@ module.exports = ({
                         { $match: { "$referenceObject.0": { $exists: true } } },
                         { $unwind: "$referenceObject" },
                         { $sort: { createdAt: 1 } },
-                        { $replaceRoot: { newRoot:  "$referenceObject" } }
+                        { $replaceRoot: { newRoot: "$referenceObject" } }
                     ];
                 }
 
@@ -80,7 +73,6 @@ module.exports = ({
                 const result = await follows.aggregate(pipeline).toArray();
 
                 return [null, result.length ? result : null];
-
             } catch (error) {
                 return [error];
             }
@@ -106,10 +98,9 @@ module.exports = ({
                 );
 
                 return [null, result.modifiedCount ? true : false];
-
             } catch (error) {
                 return [error];
             }
         }
-    }
+    };
 }

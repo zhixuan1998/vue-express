@@ -1,7 +1,7 @@
-const { ObjectId } = require("mongodb");
-const orderStatusEnum = require("../../enum/orderStatus");
+import { ObjectId } from "mongodb";
+import orderStatusEnum from "../../enum/orderStatus.js";
 
-module.exports = class Order {
+export default class Order {
     constructor({
         userId,
         orderNumber,

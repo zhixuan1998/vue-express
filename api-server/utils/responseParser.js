@@ -1,4 +1,4 @@
-const { general: generalErrorMessage } = require("../errorMessages");
+import errorMessages from "../errorMessages.js";
 
 function generateSuccessResponse(response = null, pagination = null) {
     let status = {
@@ -26,7 +26,7 @@ function generateSuccessResponse(response = null, pagination = null) {
 }
 
 function generateErrorResponse(...args) {
-    let status = generalErrorMessage();
+    let status = errorMessages.general();
 
     args.map((arg) => {
         // if (arg instanceof Error)
@@ -38,7 +38,4 @@ function generateErrorResponse(...args) {
     return { status };
 }
 
-module.exports = {
-    generateSuccessResponse,
-    generateErrorResponse
-};
+export { generateSuccessResponse, generateErrorResponse };

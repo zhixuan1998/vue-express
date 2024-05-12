@@ -1,6 +1,6 @@
-const { ObjectId } = require("mongodb");
+import { ObjectId } from "mongodb";
 
-module.exports = class Product {
+export default class Product {
     constructor({
         name,
         imageUrl,

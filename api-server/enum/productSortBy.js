@@ -3,4 +3,4 @@ const productSortBy = {
     UNIT_PRICE: "unitPrice",
 }
 
-module.exports = productSortBy;
+export default productSortBy;

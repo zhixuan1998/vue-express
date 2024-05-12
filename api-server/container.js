@@ -1,13 +1,13 @@
-const { createContainer, asValue, Lifetime } = require("awilix");
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const config = require("./appsettings.js");
+import { createContainer, asValue, Lifetime } from "awilix";
+import { MongoClient, ServerApiVersion } from "mongodb";
+import config from "./appsettings.js";
 
-const buildCollections = async () => {
+async function buildCollections() {
     const client = new MongoClient(config.mongodb.default, {
         serverApi: {
             version: ServerApiVersion.v1,
             strict: true,
-            deprecationErrors: true,
+            deprecationErrors: true
         }
     });
 
@@ -37,8 +37,8 @@ const buildCollections = async () => {
         refreshTokens,
         shops,
         users,
-        wishlists,
-    }
+        wishlists
+    };
 }
 
 const container = createContainer();
@@ -46,13 +46,15 @@ const container = createContainer();
 async function setup() {
     const collections = await buildCollections();
 
-    container.loadModules(["repositories/*Repository.js"], { resolverOptions: { lifetime: Lifetime.SINGLETON } });
+    await container.loadModules(["repositories/*Repository.js"], {
+        resolverOptions: { lifetime: Lifetime.SINGLETON },
+        esModules: true
+    });
 
     container.register({
         config: asValue(config),
-        collections: asValue(collections),
+        collections: asValue(collections)
     });
 }
 
-
-module.exports = { container, setup };
+export { container, setup };
