@@ -1,16 +1,12 @@
 import { createController } from "awilix-express";
-import { initializeApp } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
 import { generateSuccessResponse, generateErrorResponse } from "../../utils/responseParser.js";
 import { User, Account, RefreshToken } from "../../aggregate/index.js";
 import errorMessages from "../../errorMessages.js";
 import { encrypt } from "../../utils/encryption.js";
 import accountTypeEnum from "../../enum/accountType.js";
+import { auth } from "../../utils/firebase";
 
 const controller = ({ config, userRepository, accountRepository, refreshTokenRepository }) => {
-    const app = initializeApp(config.firebaseconfig);
-    const auth = getAuth(app);
-
     async function createUserAndAccount({
         firstName,
         lastName,
@@ -63,7 +59,7 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
         }
     }
 
-    async function handleToken({ res, userProfile }) {
+    async function handleToken({ req, res, userProfile }) {
         try {
             const userId = userProfile.getId();
 
@@ -171,7 +167,7 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
 
                 await userRepository.login(userId);
 
-                const [newAccessTokenError, newAccessToken] = await handleToken({ req, userProfile });
+                const [newAccessTokenError, newAccessToken] = await handleToken({ req, res, userProfile });
 
                 if (newAccessTokenError) throw newAccessTokenError;
 
@@ -231,7 +227,7 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
                     firebaseUser = await auth.verifyIdToken(accessToken);
                 } catch (error) {
                     res.status(400).send(
-                        generateErrorResponse(errorMessages.invalidFirebaseAccessToken(error.errorInfo.code))
+                        generateErrorResponse(errorMessages.invalidFirebaseAccessToken(error?.errorInfo.code))
                     );
                 }
 
@@ -275,7 +271,7 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
 
                 await userRepository.login(userProfile.getId());
 
-                const [newAccessTokenError, newAccessToken] = await handleToken({ res, userProfile });
+                const [newAccessTokenError, newAccessToken] = await handleToken({ req, res, userProfile });
 
                 if (newAccessTokenError) throw newAccessTokenError;
 

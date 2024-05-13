@@ -7,11 +7,13 @@ export default {
         }
     },
     firebase: {
-        apiKey: import.meta.env.VITE_FIREBASE__API_KEY,
-        authDomain: import.meta.env.VITE_FIREBASE__AUTH_DOMAIN,
-        projectId: import.meta.env.VITE_FIREBASE__PROJECT_ID,
-        storageBucket: import.meta.env.VITE_FIREBASE__STORAGE_BUCKET,
-        messagingSenderId: import.meta.env.VITE_FIREBASE__MESSAGING_SENDER_ID,
-        appId: import.meta.env.VITE_FIREBASE__APP_ID
+        config: {
+            apiKey: import.meta.env.VITE_FIREBASE__CONFIG__API_KEY,
+            authDomain: import.meta.env.VITE_FIREBASE__CONFIG__AUTH_DOMAIN,
+            projectId: import.meta.env.VITE_FIREBASE__CONFIG__PROJECT_ID,
+            storageBucket: import.meta.env.VITE_FIREBASE__CONFIG__STORAGE_BUCKET,
+            messagingSenderId: import.meta.env.VITE_FIREBASE__CONFIG__MESSAGING_SENDER_ID,
+            appId: import.meta.env.VITE_FIREBASE__CONFIG__APP_ID
+        }
     }
 }
