@@ -46,14 +46,11 @@ const useUserStore = defineStore('userStore', () => {
         return success;
     };
 
-    const socialLogin = async ({ firstName, email, phoneNumber, firebaseUid, providerId }) => {
+    const socialLogin = async ({ accessToken, provider }) => {
         const success = await httpClient
             .post(`users/socialLogin`, {
-                firstName,
-                email,
-                phoneNumber,
-                firebaseUid,
-                providerId
+                accessToken,
+                provider
             })
             .then(async ({ data: { data } }) => {
                 localStorage.setItem('accessToken', data.accessToken);

@@ -7,19 +7,19 @@ const PROVIDER_INSTANCE = {
     FACEBOOK: FacebookAuthProvider
 };
 
-const firebaseConfig = config.firebase;
+const firebaseConfig = config.firebase.config;
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-function customConfiguration(provider, id) {
+function customConfiguration(provider, providerType) {
     let customParameters = {};
 
-    switch (id) {
-        case 'GOOGLE':
-            provider.addScope('profile');
+    switch (providerType) {
+        case 'google':
+            provider.addScope('https://www.googleapis.com/auth/userinfo.profile');
             break;
-        // case 'FACEBOOK':
+        // case 'facebook':
         //     provider.addScope('email');
         //     provider.addScope('user_birthday');
         //     customParameters.display = 'popup';
@@ -29,42 +29,45 @@ function customConfiguration(provider, id) {
     provider.setCustomParameters(customParameters);
 }
 
-function useFirebaseAuth(providerIds) {
-    if (!Array.isArray(providerIds) || !providerIds?.length) return providerGroup;
+function useFirebaseAuth(providerTypes) {
+    try {
 
-    const providerGroup = providerIds.reduce((providerGroup, id) => {
-        id = id.toUpperCase();
+        let providerGroup = {};
 
-        let Provider = PROVIDER_INSTANCE[id];
+        if (!Array.isArray(providerTypes) || !providerTypes?.length) return providerGroup;
 
-        if (!Provider || providerGroup[id]) return providerGroup;
+        providerTypes.map((providerType) => {
+            let Provider = PROVIDER_INSTANCE[providerType.toUpperCase()];
 
-        let provider = new Provider();
+            if (!Provider || providerGroup[providerType]) return providerGroup;
 
-        customConfiguration(provider, id);
+            let provider = new Provider();
 
-        async function signIn() {
-            try {
-                const result = await signInWithPopup(auth, provider);
-                const credential = Provider.credentialFromResult(result);
-                const token = credential.accessToken;
-                const user = result.user;
-                return { user, token };
-            } catch (error) {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                const email = error.email;
-                const credential = Provider.credentialFromError(error);
-                return { errorCode, errorMessage, email, credential };
+            customConfiguration(provider, providerType);
+
+            async function signIn() {
+                try {
+                    const result = await signInWithPopup(auth, provider);
+                    const credential = Provider.credentialFromResult(result);
+                    const accessToken = credential.accessToken;
+                    const user = result.user;
+                    return { user, accessToken };
+                } catch (error) {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    const email = error.email;
+                    const credential = Provider.credentialFromError(error);
+                    return { errorCode, errorMessage, email, credential };
+                }
             }
-        }
 
-        providerGroup[id] = { signIn };
+            providerGroup[providerType] = { signIn };
+        });
 
         return providerGroup;
-    }, {});
-
-    return providerGroup;
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 export default useFirebaseAuth;

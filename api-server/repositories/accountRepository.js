@@ -36,18 +36,26 @@ module.exports = ({
             }
         },
 
-        async getByEmail(email) {
+        async get({ email, firebaseUid }) {
             try {
-                const result = await accounts.findOne({
-                    email,
+                let query = {
                     isDeleted: false
-                });
+                };
+
+                if (email) {
+                    query.email = email;
+                }
+
+                if (firebaseUid) {
+                    query.firebaseUid = firebaseUid;
+                }
+
+                const result = await accounts.findOne(query);
 
                 return [null, result ? new Account(result) : null];
-
             } catch (error) {
                 return [error];
-            }           
+            }
         },
 
         async deleteAccounts(userId) {

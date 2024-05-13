@@ -1,10 +1,10 @@
 <template>
   <div class="flex" :class="[isMobile ? 'flex-column' : 'flex-row']">
-    <custom-button @click="socialLogin('google')">
+    <custom-button @click="socialLogin(PROVIDER_TYPE.GOOGLE)">
       <font-awesome-icon :icon="faGoogle" />
     </custom-button>
 
-    <custom-button @click="socialLogin('facebook')">
+    <custom-button @click="socialLogin(PROVIDER_TYPE.FACEBOOK)">
       <font-awesome-icon :icon="faFacebook" />
     </custom-button>
   </div>
@@ -18,26 +18,27 @@ import { faGoogle, faFacebook } from '@fortawesome/free-brands-svg-icons';
 import { useUserStore } from '../stores';
 import { useMediaQuery, useFirebaseAuth } from '../hooks';
 
+const PROVIDER_TYPE = {
+  GOOGLE: 'google',
+  FACEBOOK: 'facebook'
+};
+
 const $modal = inject('modal');
 
 const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 const [isMobile] = useMediaQuery([{ maxWidth: '450px' }]);
-const providerGroup = useFirebaseAuth(['google', 'facebook']);
+const providerGroup = useFirebaseAuth(Object.values(PROVIDER_TYPE));
 
-async function socialLogin(providerId) {
-  const result = await providerGroup[providerId.toUpperCase()]?.signIn();
+async function socialLogin(providerType) {
+  const result = await providerGroup[providerType]?.signIn();
+  const accessToken = result?.accessToken;
 
-  const user = result?.user;
-
-  const success = user
+  const success = accessToken
     ? await userStore.socialLogin({
-        providerId,
-        email: user.email,
-        firebaseUid: user.uid,
-        firstName: user.displayName,
-        phoneNumber: user.phoneNumber
+        provider: providerType,
+        accessToken
       })
     : false;
 

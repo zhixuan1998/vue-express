@@ -10,7 +10,7 @@ POST {{baseURL}}/users/login
 Content-Type: application/json
 
 {
-    "email": "terry.donk@local.com",
+    "email": "witness.touchstone@gmail.com",
     "password": "UEBzc3dvcmQxMjM="
 }
 

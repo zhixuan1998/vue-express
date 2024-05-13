@@ -10,7 +10,7 @@ const lookupRepository = () => {
             return [
                 { key: 'brand', value: 'Search within brand' },
                 { key: 'category', value: 'Search within category' },
-                { key: 'product', value: 'Search product' }
+                { key: 'all', value: 'Search product' }
             ];
         }
     };

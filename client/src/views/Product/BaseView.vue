@@ -24,7 +24,7 @@ import { useRoute, useRouter } from 'vue-router';
 const DEFAULT_IMAGE_URL = 'https://picsum.photos/200';
 
 const SEARCH_AREA_ROUTE_NAME = {
-  product: 'Product',
+  all: 'Home',
   brand: 'ProductBrand',
   category: 'ProductCategory'
 };

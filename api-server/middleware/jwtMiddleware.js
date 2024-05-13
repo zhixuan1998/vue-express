@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
     try {
         const authToken = req.headers["authorization"];
 
-        const [authType, token] = authToken.split(" ");
+        const [authType, token] = authToken?.split(" ") ?? [];
 
         if (req.path === "/api/users/token" || authType !== "Bearer" || !token) {
             return next();
@@ -42,7 +42,7 @@ module.exports = (req, res, next) => {
             next();
         });
     } catch (err) {
-        // console.log(err);
+        console.log(err);
         return res.status(500).send(generateErrorResponse());
     }
 };
