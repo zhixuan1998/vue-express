@@ -31,3 +31,5 @@ cd api-server
 ```
 
 Read **api-server/README.md** to setup
+
+LINK: https://my-firebase-fb9be.web.app/
