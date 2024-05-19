@@ -8,5 +8,8 @@ module.exports = {
     // Auth
     tokenExpired: () => ({ code: 1100, message: "Token expired." }),
     refreshTokenNotFound: () => ({ code: 1101, message: "Refresh token not found." }),
-    fingerprintMismatch: () => ({ code: 1102, message: "Fingerprint mismatch." })
+    fingerprintMismatch: () => ({ code: 1102, message: "Fingerprint mismatch." }),
+
+    // TODO: different error message for different firebase error
+    invalidFirebaseAccessToken: (firebaseError) => ({ code: 1103, message: "Invalid firebase access token." }),
 };

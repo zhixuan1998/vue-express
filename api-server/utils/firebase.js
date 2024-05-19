@@ -5,4 +5,4 @@ const config = require("../appsettings");
 const app = initializeApp(config.firebaseconfig);
 const auth = getAuth(app);
 
-exports = { auth };
+module.exports = { auth };

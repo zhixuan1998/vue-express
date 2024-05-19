@@ -46,11 +46,11 @@ const container = createContainer();
 async function setup() {
     const collections = await buildCollections();
 
-    container.loadModules(["repositories/*Repository.js"], { resolverOptions: { lifetime: Lifetime.SINGLETON } });
+    container.loadModules(["repositories/*Repository.js", "src/*/*CommonFunction.js"], { resolverOptions: { lifetime: Lifetime.SINGLETON } });
 
     container.register({
         config: asValue(config),
-        collections: asValue(collections),
+        collections: asValue(collections)
     });
 }
 

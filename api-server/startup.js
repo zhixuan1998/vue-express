@@ -22,19 +22,18 @@ module.exports = async (config) => {
         ],
         metaField: "metadata",
         requestWhitelist: ["body", "headers", "query", "method", "url"],
-        responseWhitelist: ["body", "statusCode", "error"]
+        responseWhitelist: ["body", "headers", "statusCode", "error"]
     });
 
     await setup();
 
     var app = express();
-    app.use(cors());
+    app.use(cors({ credentials: true, origin: config.origin }))
     app.use(express.json());
     app.use(helmet());
     app.use(cookieParser());
     app.use(logger);
     app.use(function (req, res, next) {
-        res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Methods", "*");
         res.header("Access-Control-Allow-Headers", "*");
         next();

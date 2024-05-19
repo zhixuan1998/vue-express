@@ -14,15 +14,20 @@ const controller = ({ config, brandRepository, followRepository }) => {
 
                 if (brandsError) throw brandsError;
 
-                let response = brands
-                    ? brands.map((r) => {
-                          return {
-                              brandId: r.getId(),
-                              name: r.name,
-                              imageUrl: r.imageUrl
-                          };
-                      })
-                    : [];
+                let response = brands ? brands.map((r) => {
+                    const brandId = r.getId();
+
+                    const { baseUrl } = config.image;
+                    const { imageDirectoryPath } = config.brand;
+
+                    const imageUrl = new URL(imageDirectoryPath.replace("{brandId}", brandId), baseUrl).href;
+
+                    return {
+                        brandId,
+                        name: r.name,
+                        imageUrl
+                    };
+                }) : [];
 
                 return res.status(200).send(generateSuccessResponse(response));
             } catch (err) {
@@ -46,16 +51,14 @@ const controller = ({ config, brandRepository, followRepository }) => {
 
                 if (followsError) throw followsError;
 
-                let response = follows
-                    ? follows.map((r) => {
-                          const brand = new Brand(r.referenceObject);
+                let response = follows ? follows.map((r) => {
+                    const brand = new Brand(r.referenceObject);
 
-                          return {
-                              brandId: brand.getId(),
-                              name: brand.name
-                          };
-                      })
-                    : [];
+                    return {
+                        brandId: brand.getId(),
+                        name: brand.name
+                    };
+                }) : [];
 
                 return res.status(200).send(generateSuccessResponse(response));
             } catch (err) {

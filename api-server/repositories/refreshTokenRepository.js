@@ -18,7 +18,11 @@ module.exports = ({ collections: { refreshTokens } }) => {
             try {
                 const result = await refreshTokens.insertOne(refreshTokenData);
 
-                return [null, true];
+                const insertedId = result.insertedId;
+
+                const insertedResult = await refreshTokens.findOne({ _id: insertedId });
+
+                return [null, new RefreshToken(insertedResult)];
             } catch (error) {
                 return [error];
             }
@@ -37,24 +41,21 @@ module.exports = ({ collections: { refreshTokens } }) => {
             }
         },
 
-        async deleteRefreshToken({ userId, token }) {
+        async deleteRefreshToken(oldRefreshToken) {
             try {
-                let query = {
-                    token,
-                    isDeleted: false
-                };
-
-                if (userId) {
-                    query.userId = new ObjectId(userId);
-                }
-
-                const result = await refreshTokens.findOneAndUpdate(query, {
-                    $set: {
-                        isDeleted: true,
-                        modifiedAt: new Date(),
-                        modifiedBy: new ObjectId("000000000000000000000000")
+                const result = await refreshTokens.findOneAndUpdate(
+                    {
+                        token: oldRefreshToken,
+                        isDeleted: false
+                    },
+                    {
+                        $set: {
+                            isDeleted: true,
+                            modifiedAt: new Date(),
+                            modifiedBy: new ObjectId("000000000000000000000000")
+                        }
                     }
-                });
+                );
 
                 return [null, result ? new RefreshToken(result) : null];
             } catch (error) {

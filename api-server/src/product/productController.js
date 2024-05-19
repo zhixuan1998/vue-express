@@ -92,9 +92,16 @@ const controller = ({
                     throw productsError;
 
                 let response = products ? products.map(r => {
+                    const productId = r.getId();
+
+                    const { baseUrl } = config.image;
+                    const { imageDirectoryPath } = config.product;
+
+                    const imageUrl = new URL(imageDirectoryPath.replace("{productId}", productId), baseUrl).href;
+
                     return {
-                        productId: r.getId(),
-                        imageUrl: r.imageUrl,
+                        productId,
+                        imageUrl,
                         name: r.name,
                         description: r.description,
                         unitPrice: parseFloat(r.unitPrice),
@@ -107,7 +114,7 @@ const controller = ({
                 return res.status(200).send(generateSuccessResponse(response));
 
             } catch (err) {
-                // console.log(err);
+                console.log(err);
                 return res.status(500).send(generateErrorResponse());
             }
         }

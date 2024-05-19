@@ -12,19 +12,24 @@ const controller = ({ config, categoryRepository }) => {
 
                 if (categoriesError) throw categoriesError;
 
-                let response = categories
-                    ? categories.map((r) => {
-                          return {
-                              categoryId: r.getId(),
-                              name: r.name,
-                              imageUrl: r.imageUrl
-                          };
-                      })
-                    : [];
+                let response = categories ? categories.map((r) => {
+                    const categoryId = r.getId();
+
+                    const { baseUrl } = config.image;
+                    const { imageDirectoryPath } = config.category;
+
+                    const imageUrl = new URL(imageDirectoryPath.replace("{categoryId}", categoryId), baseUrl).href;
+
+                    return {
+                        categoryId,
+                        name: r.name,
+                        imageUrl
+                    };
+                }) : [];
 
                 return res.status(200).send(generateSuccessResponse(response));
             } catch (err) {
-                // console.log(err);
+                console.error(err);
                 return res.status(500).send(generateErrorResponse());
             }
         }

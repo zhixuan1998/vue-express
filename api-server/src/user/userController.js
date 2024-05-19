@@ -1,12 +1,12 @@
 const { createController } = require("awilix-express");
 const { generateSuccessResponse, generateErrorResponse } = require("../../utils/responseParser");
-const { User, Account, RefreshToken } = require("../../aggregate");
+const { User, Account } = require("../../aggregate");
 const errorMessages = require("../../errorMessages");
 const { encrypt, hash } = require("../../utils/encryption");
 const { auth } = require("../../utils/firebase");
 const accountTypeEnum = require("../../enum/accountType");
 
-const controller = ({ config, userRepository, accountRepository, refreshTokenRepository }) => {
+const controller = ({ config, userRepository, accountRepository, userCommonFunction }) => {
     async function createUserAndAccount({
         firstName,
         lastName,
@@ -49,55 +49,11 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
             if (createAccountError) throw createAccountError;
 
             const createdObj = {
-                user: createUser,
+                userProfile: createUser,
                 account: createAccount
             };
 
             return [null, createdObj];
-        } catch (error) {
-            return [error];
-        }
-    }
-
-    async function handleToken({ req, res, userProfile }) {
-        try {
-            const userId = userProfile.getId();
-
-            const [loginError, login] = await userRepository.login(userId);
-
-            if (loginError) throw loginError;
-
-            const oldRefreshToken = req.cookies?.refreshToken;
-
-            if (oldRefreshToken) {
-                const [deleteRefreshTokenError, deleteRefreshToken] = await refreshTokenRepository.deleteRefreshToken({
-                    userId,
-                    token: oldRefreshToken
-                });
-
-                if (deleteRefreshTokenError) throw deleteRefreshTokenError;
-            }
-
-            const { accessTokenSecret, accessTokenDurationInHour } = config.security;
-
-            const { accessToken, accessTokenExpiredAt, fingerprint } = userProfile.generateToken(
-                accessTokenSecret,
-                accessTokenDurationInHour
-            );
-
-            const refreshTokenData = new RefreshToken({ userId: userId });
-
-            const [newRefreshTokenError, newRefreshToken] =
-                await refreshTokenRepository.createRefreshToken(refreshTokenData);
-
-            if (newRefreshTokenError) throw newRefreshTokenError;
-
-            res.cookie("refreshToken", newRefreshToken.token, {
-                expires: newRefreshToken.expiredAt,
-                httpOnly: true
-            }).cookie("fingerprint", fingerprint, { expires: accessTokenExpiredAt, httpOnly: true });
-
-            return [null, accessToken];
         } catch (error) {
             return [error];
         }
@@ -124,7 +80,7 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
                     firstName: userProfile.firstName,
                     lastName: userProfile.lastName,
                     gender: userProfile.gender,
-                    dob: userProfile.dob.toISOString(),
+                    dob: userProfile.dob?.toISOString() ?? null,
                     email: userProfile.email,
                     phoneCode: userProfile.phoneCode,
                     phoneNumber: userProfile.phoneNumber,
@@ -133,7 +89,7 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
 
                 return res.status(200).send(generateSuccessResponse(response));
             } catch (err) {
-                // console.log(err);
+                console.error(err);
                 return res.status(500).send(generateErrorResponse(err));
             }
         },
@@ -165,9 +121,16 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
                 if (!userProfile)
                     return res.status(404).send(generateErrorResponse(errorMessages.recordNotFound("User not found.")));
 
-                await userRepository.login(userId);
+                const [loginError, login] = await userRepository.login(userId);
 
-                const [newAccessTokenError, newAccessToken] = await handleToken({ req, res, userProfile });
+                if (loginError) throw loginError;
+
+                const [newAccessTokenError, newAccessToken] = await userCommonFunction.handleToken({
+                    req,
+                    res,
+                    userProfile,
+                    ignoreRefreshTokenNotFound: true
+                });
 
                 if (newAccessTokenError) throw newAccessTokenError;
 
@@ -175,8 +138,8 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
 
                 return res.status(200).send(generateSuccessResponse(response));
             } catch (err) {
-                console.log(err);
-                return res.status(500).send(generateErrorResponse());
+                console.error(err);
+                return res.status(500).clearCookie("refreshToken").clearCookie("fingerprint").send(generateErrorResponse());
             }
         },
 
@@ -241,15 +204,11 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
                 try {
                     firebaseUser = await auth?.verifyIdToken(accessToken);
                 } catch (error) {
-                    res.status(400).send(
-                        generateErrorResponse(errorMessages.invalidFirebaseAccessToken(error?.errorInfo.code))
-                    );
+                    return res.status(400).send(generateErrorResponse(errorMessages.invalidFirebaseAccessToken(error?.errorInfo.code)));
                 }
 
                 if (!firebaseUser)
-                    res.status(404).send(
-                        generateErrorResponse(errorMessages.recordNotFound("Firebase user not found."))
-                    );
+                    return res.status(404).send(generateErrorResponse(errorMessages.recordNotFound("Firebase user not found.")));
 
                 const { name: firstName, email, uid: firebaseUid } = firebaseUser;
 
@@ -266,9 +225,7 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
                     if (userProfileError) throw userProfileError;
 
                     if (!userProfile)
-                        return res
-                            .status(404)
-                            .send(generateErrorResponse(errorMessages.recordNotFound("User not found.")));
+                        return res.status(404).send(generateErrorResponse(errorMessages.recordNotFound("User not found.")));
                 } else {
                     const [userAndAccountError, userAndAccount] = await createUserAndAccount({
                         firstName,
@@ -284,9 +241,16 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
                     account = userAndAccount.account;
                 }
 
-                await userRepository.login(userProfile.getId());
+                const [loginError, login] = await userRepository.login(userProfile.getId());
 
-                const [newAccessTokenError, newAccessToken] = await handleToken({ req, res, userProfile });
+                if (loginError) throw loginError;
+
+                const [newAccessTokenError, newAccessToken] = await userCommonFunction.handleToken({
+                    req,
+                    res,
+                    userProfile,
+                    ignoreRefreshTokenNotFound: true
+                });
 
                 if (newAccessTokenError) throw newAccessTokenError;
 
@@ -294,8 +258,8 @@ const controller = ({ config, userRepository, accountRepository, refreshTokenRep
 
                 return res.status(200).send(generateSuccessResponse(response));
             } catch (err) {
-                // console.log(err);
-                return res.status(500).send(generateErrorResponse());
+                console.error(err);
+                return res.status(500).clearCookie("refreshToken").clearCookie("fingerprint").send(generateErrorResponse());
             }
         },
 
