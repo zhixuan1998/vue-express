@@ -9,7 +9,8 @@ let queue = [];
 const BASIC_AUTH = `Basic ${btoa(`${import.meta.env.VITE_BASIC_AUTH_ID}:${import.meta.env.VITE_BASIC_AUTH_SECRET}`)}`;
 
 const httpClient = axios.create({
-    baseURL: config.service.baseURL
+    baseURL: config.service.baseURL,
+    withCredentials: true
 });
 
 httpClient.interceptors.request.use(async (config) => {

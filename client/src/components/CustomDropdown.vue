@@ -153,8 +153,6 @@ function setRelativeElPosition() {
 
 <style lang="scss" scoped>
 .custom-dropdown {
-  --background-color: rgba(228, 206, 255, 0.5);
-
   & > * {
     width: 100%;
   }
@@ -177,7 +175,6 @@ function setRelativeElPosition() {
       width: 100%;
       padding: 0 10px;
       border: none;
-      background-color: rgba(0, 0, 0, 0);
 
       div {
         display: flex;
@@ -209,13 +206,10 @@ function setRelativeElPosition() {
 
     &.open {
       grid-template-rows: 1fr;
-      border: 1px solid var(--theme-color-s);
+      border: 1px solid #{func.theme-color(l, 0.6)};
     }
 
     .menu-content {
-      --scrollbal-thumb-mouseout-color: rgba(36, 32, 104, 0);
-      --scrollbal-thumb-mouseenter-color: rgba(36, 32, 104, 0.4);
-
       display: flex;
       flex-direction: column;
       overflow-y: auto;
@@ -229,32 +223,32 @@ function setRelativeElPosition() {
         &::-webkit-scrollbar-thumb {
           height: 15px;
           border-radius: 50px;
-          background-color: var(--scrollbal-thumb-mouseout-color);
+          background-color: #fff;
         }
 
         &:hover::-webkit-scrollbar-thumb {
-          background-color: var(--scrollbal-thumb-mouseenter-color);
+          background-color: func.theme-color(l);
         }
       }
 
       @supports (not selector(::-webkit-scrollbar)) and (scrollbar-color: auto) {
-        scrollbar-color: var(--scrollbal-thumb-mouseout-color) #ffffff;
+        scrollbar-color: #fff;
         scrollbar-width: thin;
 
         &:hover {
-          scrollbar-color: var(--scrollbal-thumb-mouseenter-color) #ffffff;
+          scrollbar-color: func.theme-color(l);
         }
       }
 
       .menu-item {
-        color: var(--theme-color-xl);
+        color: func.theme-color(xl);
         width: 100%;
         padding: 5px 10px;
         cursor: pointer;
 
         &.selected:not(:has(input)),
         &:hover:not(:has(input)) {
-          background-color: rgba(228, 206, 255, 0.5);
+          background-color:  func.theme-color(xs);
         }
 
         &:has(input) {
@@ -267,10 +261,10 @@ function setRelativeElPosition() {
         input {
           padding: 1px 5px;
           width: 100%;
-          border: 1px solid rgba(36, 32, 104, 0.2);
+          border: 1px solid #{func.theme-color(l, 0.3)};
 
           &:focus {
-            border: 1px solid rgba(36, 32, 104, 0.6);
+            border: 1px solid #{func.theme-color(l, 0.6)};
           }
 
           &:not(:read-only):focus::placeholder,

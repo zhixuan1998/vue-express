@@ -6,7 +6,8 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 import VueDevTools from 'vite-plugin-vue-devtools';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+
+const config = defineConfig({
     plugins: [
         vue({
             template: {
@@ -16,10 +17,24 @@ export default defineConfig({
             }
         }),
         vueJsx(),
-        VueDevTools()],
+        VueDevTools()
+    ],
     resolve: {
         alias: {
             '@': fileURLToPath(new URL('./src', import.meta.url))
         }
+    },
+    css: {
+        preprocessorOptions: {
+            scss: {
+                additionalData: `
+                    @use "./src/assets/styles/scss/_mixins.scss" as mix;
+                    @use "./src/assets/styles/scss/_functions.scss" as func;
+                `,
+                loadPaths: ['/node_modules/bootstrap/scss', './src/assets/styles/scss']
+            }
+        }
     }
 });
+
+export default config

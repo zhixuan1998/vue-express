@@ -1,8 +1,8 @@
-@import "./function.scss";
+@use "functions" as func;
 
 @mixin base-wrapper {
     width: 100%;
-    padding: 10px responsive-spacing();
+    padding: 10px func.responsive-spacing();
 }
 
 @mixin multiline-ellipsis($line-clamp: 2) {

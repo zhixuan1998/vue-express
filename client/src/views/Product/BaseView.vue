@@ -39,7 +39,7 @@ const products = ref([]);
 const categories = ref([]);
 const brands = ref([]);
 const headerRef = ref(null);
-const enableInfiniteLoad = ref(true);
+const enableInfiniteLoad = ref(false);
 
 onMounted(async () => {
   allSearchAreaOptions = await $repositories.lookupRepository.getSearchProductAreas();
@@ -94,6 +94,9 @@ watch(productFilter, async () => getProducts());
 
 async function getProducts() {
   const filter = { ...productFilter.value, page: 1 };
+
+  products.value = [];
+  page = 1;
 
   await $repositories.productRepository.getAll(filter).then(({ data: { data } }) => {
     products.value = data?.results ?? [];

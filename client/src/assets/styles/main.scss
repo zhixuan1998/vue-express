@@ -1,7 +1,6 @@
-@import "/node_modules/bootstrap/scss/bootstrap.scss";
-@import "./base.css";
-@import "./custom.scss";
-
+@import "bootstrap";
+@import "base";
+@import "scss";
 
 #app {
   /* min-width: 100vw;

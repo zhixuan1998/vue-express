@@ -4,7 +4,7 @@
       <font-awesome-icon :icon="faGoogle" />
     </custom-button>
 
-    <custom-button @click="socialLogin(PROVIDER_TYPE.FACEBOOK)">
+    <custom-button @click="socialLogin(PROVIDER_TYPE.FACEBOOK)" disabled>
       <font-awesome-icon :icon="faFacebook" />
     </custom-button>
   </div>

@@ -93,7 +93,7 @@ const togglePassword = () => {
 .input-container {
   .main {
     display: flex;
-    color: var(--theme-color-xl);
+    color: func.theme-color(xl);
 
     &.vertical-layout {
       flex-direction: column;
@@ -126,19 +126,19 @@ const togglePassword = () => {
         width: 70px;
 
         .dropdown-container {
-          background-color: rgba(228, 206, 255, 0.6);
-          border: 1px solid rgba(36, 32, 104, 0.2);
+          background-color: func.theme-color(xs);
+          border: 1px solid #{func.theme-color(l, 0.3)};
 
           .dropdown-opener div {
             justify-content: center;
           }
 
           &:has(.dropdown-opener:focus) {
-            border-color: rgba(36, 32, 104, 0.6);
+            border-color: func.theme-color(l, 0.6);
           }
 
           &:has(.dropdown-opener:not(:focus)) {
-            border-right-color: rgba(0, 0, 0, 0);
+            border-right-color: func.theme-color(l, 0.3);
           }
         }
       }
@@ -147,7 +147,7 @@ const togglePassword = () => {
         display: flex;
         flex-grow: 1;
         height: 100%;
-        border: 1px solid rgba(36, 32, 104, 0.2);
+        border: 1px solid #{func.theme-color(l, 0.3)};
 
         &:has(input:focus) {
           border-color: rgba(36, 32, 104, 0.6);

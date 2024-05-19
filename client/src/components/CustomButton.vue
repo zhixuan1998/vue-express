@@ -1,5 +1,5 @@
 <template>
-  <button class="custom-button" :class="color"><slot></slot></button>
+  <button class="custom-button" :class="color" :disabled="disabled"><slot></slot></button>
 </template>
 
 <script setup>
@@ -7,16 +7,19 @@ defineProps({
   color: {
     type: String,
     default: 'primary'
-  }
+  },
+  disabled: Boolean
 });
 </script>
 
 <style lang="scss" scoped>
+// functions
+
 .custom-button {
   flex-grow: 1;
   padding: 9px 36px;
   text-align: center;
-  border: 1px solid var(--theme-color-l);
+  border: 1px solid #{func.theme-color(l)};
 
   &:disabled {
     cursor: not-allowed;
@@ -24,32 +27,31 @@ defineProps({
 
   &.primary {
     color: #ffffff;
-    background-color: rgba(185, 165, 254, 1);
 
     &:disabled,
     &:hover {
-      background-color: rgba(185, 165, 254, 0.91);
+      background-color: func.theme-color(l, 0.9);
+      border-color: func.theme-color(l, 0.9);
     }
 
+    &,
     &:active:not(:disabled) {
-      background-color: rgba(185, 165, 254, 1);
+      background-color: func.theme-color(l);
     }
   }
 
   &.secondary {
-    color: var(--theme-color-l);
-
     &,
     &:disabled {
-      background-color: rgba(36, 32, 104, 0);
+      background-color: func.theme-color(xs, 0.3);
     }
 
     &:hover:not(:disabled) {
-      background-color: rgba(36, 32, 104, 0.03);
+      background-color: func.theme-color(xs, 0.6);
     }
 
     &:active:not(:disabled) {
-      background-color: rgba(36, 32, 104, 0.06);
+      background-color: func.theme-color(xs);
     }
   }
 }

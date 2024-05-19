@@ -104,7 +104,7 @@ const modelValue = defineModel();
         opacity: 0;
 
         &:checked + label::before {
-          background-color: var(--theme-color-l);
+          background-color: func.theme-color(xl);
           box-shadow: inset 0 0 0 3px #ffffff;
         }
 
@@ -116,7 +116,7 @@ const modelValue = defineModel();
           height: 20px;
           border-radius: 50%;
           background-color: #ffffff;
-          border: 1px solid var(--theme-color-l);
+          border: 1px solid #{func.theme-color(xl)};
           transition: all 0.25s;
         }
       }

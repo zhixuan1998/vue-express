@@ -32,7 +32,7 @@ const [isMobile] = useMediaQuery([{ maxWidth: props.maxWidth }]);
   background-color: #ffffff;
   border-radius: 4px;
   box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.14);
-  color: var(--theme-color-xl);
+  color: func.theme-color(xl);
 
   .top-section {
     .title {

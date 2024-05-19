@@ -48,8 +48,8 @@ function useFirebaseAuth(providerTypes) {
             async function signIn() {
                 try {
                     const result = await signInWithPopup(auth, provider);
-                    const credential = Provider.credentialFromResult(result);
-                    const accessToken = credential.accessToken;
+                    // const credential = Provider.credentialFromResult(result);
+                    const accessToken = result?.user.accessToken;
                     const user = result.user;
                     return { user, accessToken };
                 } catch (error) {

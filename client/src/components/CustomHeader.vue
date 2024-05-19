@@ -45,10 +45,7 @@ import IconLogo from './icons/IconLogo.vue';
 const emits = defineEmits(['search']);
 
 defineProps({
-  searchBox: {
-    type: Boolean,
-    default: false
-  },
+  searchBox: Boolean,
   hasMenu: {
     type: Boolean,
     default: true
@@ -73,14 +70,12 @@ defineExpose({ searchBoxRef });
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/mixin.scss';
-
 .header-container {
-  @include base-wrapper;
+  @include mix.base-wrapper;
 
   display: grid;
   grid-auto-flow: column;
-  background-color: var(--theme-color-s);
+  background-color: func.theme-color(s);
   grid-template: 'logo search-box menu' auto / 1fr minmax(280px, 40vw) 1fr;
   grid-gap: 10px 15px;
   position: sticky;
@@ -110,7 +105,7 @@ defineExpose({ searchBoxRef });
 
     .right-content {
       font-size: 24px;
-      color: rgba(36, 32, 104, 1);
+      color: func.theme-color(l);
     }
   }
 
@@ -168,28 +163,28 @@ defineExpose({ searchBoxRef });
           height: 22px;
 
           border-radius: 50px;
-          background-color: #918fb3;
-          border: 1px solid var(--theme-color-s);
+          background-color: func.theme-color(l);
+          border: 1px solid #{func.theme-color(s)};
 
-          color: var(--theme-color-s);
+          color: func.theme-color(s);
         }
       }
 
       &:has(+ .item-cart) {
-        border-right: 1px solid var(--theme-color-l);
+        border-right: 1px solid #{func.theme-color(l)};
         padding-right: calc(var(--padding) * 2);
       }
 
       a {
         text-decoration: none;
-        color: #918fb3;
+        color: func.theme-color(l);
         font-weight: 600;
         cursor: pointer;
         white-space: nowrap;
       }
 
       &:hover a {
-        color: rgba(36, 32, 104, 1);
+        color: func.theme-color(xl);
       }
     }
   }

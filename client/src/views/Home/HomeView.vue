@@ -1,5 +1,5 @@
 <template>
-    <div class="content-section">
+    <div v-show="categories.length" class="content-section">
       <div class="content-label">{{ $messages.title.categories() }}</div>
       <custom-mini-item-carousel
         :items="categories"
@@ -7,7 +7,7 @@
         @select-item="goToCategory"
       />
     </div>
-    <div class="content-section">
+    <div v-show="brands.length" class="content-section">
       <div class="content-label">{{ $messages.title.brands() }}</div>
       <custom-mini-item-carousel :items="brands" labelField="name" @select-item="goToBrand" />
     </div>

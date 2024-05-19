@@ -1,18 +1,6 @@
-@import "./mixin.scss";
-@import "./font-face.css";
-
-:root {
-    /* rgba(228, 206, 255, 1) */
-    --theme-color-s: #e4ceff;
-    /* rgba(193, 173, 255, 1); */
-    --theme-color-m: #c1adff;
-    /* rgba(185, 165, 254, 1) */
-    --theme-color-l: #b9a5fe;
-    /* rgba(36, 32, 104, 0.5) */
-    --theme-color-xl-50: #918fb3;
-    /* rgba(36, 32, 104, 1) */
-    --theme-color-xl: #242068;
-}
+@use "font-face";
+@use "mixins" as mix;
+@use "functions" as func;
 
 body {
     overflow-x: hidden;
@@ -27,15 +15,16 @@ input {
 }
 
 .main-content {
-    @include base-wrapper;
+    @include mix.base-wrapper;
 
     display: flex;
     flex-direction: column;
     row-gap: 5px;
-    background-color: rgba(228, 206, 255, 0.3);
+    background-color: func.theme-color(xs);
 
     * {
-        font-family: NotoSans-Regular, "Microsoft JhengHei UI", Poppins, Roboto, sans-serif;
+        // font-family: NotoSans-Regular, "Microsoft JhengHei UI", Poppins, Roboto, sans-serif;
+        font-family: "Microsoft JhengHei UI", Poppins, Roboto, sans-serif;
     }
 
     > * {
@@ -48,7 +37,6 @@ input {
     }
 
     .content-section .content-label {
-        // background-color: var(--theme-color-s);
         color: rgba(36, 32, 104, 0.5);
         padding: 5px;
         font-size: 30px;
@@ -90,7 +78,7 @@ input {
                 padding: 10px;
 
                 .item-name {
-                    @include multiline-ellipsis(2);
+                    @include mix.multiline-ellipsis(2);
                     font-size: 14px;
                 }
 

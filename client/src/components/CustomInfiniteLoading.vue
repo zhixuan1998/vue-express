@@ -81,8 +81,8 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .spinner-border {
-  color: var(--theme-color-xl-50);
+  color: func.theme-color(xl, 0.5);
 }
 </style>

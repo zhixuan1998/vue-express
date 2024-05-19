@@ -151,13 +151,13 @@ defineExpose({ clearInput });
     width: calc(var(--cont-height) * 1.2);
     height: 100%;
     display: flex;
-    background-color: var(--theme-color-s);
+    background-color: func.theme-color(s);
     cursor: pointer;
     transition-duration: 0.15s;
 
     svg {
       margin: auto;
-      color: var(--theme-color-xl);
+      color: func.theme-color(l);
       transition-duration: inherit;
     }
 

@@ -70,7 +70,6 @@ function selectItem(item) {
 </script>
 
 <style lang="scss" scoped>
-@import '../assets/mixin.scss';
 .swiper-container {
   container-type: inline-size;
   width: 100%;
@@ -139,7 +138,7 @@ function selectItem(item) {
       }
 
       .item-label {
-        @include multiline-ellipsis(2);
+        @include mix.multiline-ellipsis(2);
         margin: 0;
         height: 40px;
         text-align: center;

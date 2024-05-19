@@ -1,6 +1,0 @@
-@use 'sass:math';
-
-@function responsive-spacing($min: 10, $max: 360, $min-width: 576, $max-width: 1920) {
-    $spacing: calc((max(100vw, ($min-width * 1px)) - ($min-width * 1px)) * (($max - $min) / ($max-width - $min-width)) + ($min * 1px));
-    @return $spacing;
-}
