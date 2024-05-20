@@ -13,7 +13,11 @@
         </div>
       </div>
     </custom-listing-section>
-    <custom-infinite-loading :loaded="enableInfiniteLoad" @infinite-loading="infiniteLoad" />
+    <custom-infinite-loading
+      :loaded="enableInfiniteLoad"
+      @infinite-loading="infiniteLoad"
+      ref="infiniteLoadRef"
+    />
   </div>
 </template>
 
@@ -34,11 +38,13 @@ const router = useRouter();
 const $repositories = inject('repositories');
 
 let allSearchAreaOptions = [];
+const page = ref(1);
 const searchAreaOptions = ref([]);
 const products = ref([]);
 const categories = ref([]);
 const brands = ref([]);
 const headerRef = ref(null);
+const infiniteLoadRef = ref(null);
 const enableInfiniteLoad = ref(false);
 
 onMounted(async () => {
@@ -53,9 +59,7 @@ onMounted(async () => {
   categories.value = categoryResults?.data?.data?.results ?? [];
   brands.value = brandResults?.data?.data?.results ?? [];
 
-  await getProducts();
-  await nextTick();
-  enableInfiniteLoad.value = true;
+  // await getProducts();
 });
 
 const routerViewProps = computed(() => {
@@ -72,48 +76,47 @@ const routerViewProps = computed(() => {
   return props;
 });
 
-let page = 1;
+const productFilter = {
+  search: '',
+  brandIds: [],
+  categoryIds: [],
+  limit: 30,
+  page: 1
+};
 
-const productFilter = computed(() => {
-  const {
-    query: { search },
-    params: { brandId, categoryId }
-  } = route;
+watch(
+  [() => route.query, () => route.params, page],
+  async ([newQuery, newParams, newPage]) => {
+    const { search } = newQuery;
+    const { brandId, categoryId } = newParams;
 
-  const obj = {
-    search: search || '',
-    brandIds: brandId ? [brandId] : [],
-    categoryIds: categoryId ? [categoryId] : [],
-    limit: 30
-  };
+    page.value = productFilter.page === newPage ? 1 : newPage;
 
-  return obj;
-});
+    productFilter.search = search || '';
+    productFilter.brandIds = brandId ? [brandId] : [];
+    (productFilter.categoryIds = categoryId ? [categoryId] : []), (productFilter.page = page.value);
 
-watch(productFilter, async () => getProducts());
+    await getProducts();
+  },
+  { immediate: true }
+);
 
 async function getProducts() {
-  const filter = { ...productFilter.value, page: 1 };
+  await $repositories.productRepository
+    .getAll(productFilter)
+    .then(async ({ data: { data } }) => {
+      const results = data?.results ?? [];
+      products.value = page.value === 1 ? results : [...products.value, ...results];
 
-  products.value = [];
-  page = 1;
-
-  await $repositories.productRepository.getAll(filter).then(({ data: { data } }) => {
-    products.value = data?.results ?? [];
-  });
+      await nextTick();
+      enableInfiniteLoad.value = data.pagination.isLastPage ? false : true;
+      console.log(enableInfiniteLoad.value);
+    })
+    .catch(() => infiniteLoadRef.value.pause());
 }
 
-async function infiniteLoad($state) {
-  const filter = { ...productFilter.value, page: ++page };
-
-  await $repositories.productRepository
-    .getAll(filter)
-    .then(({ data: { data } }) => {
-      products.value = [...products.value, ...(data?.results ?? [])];
-    })
-    .catch(() => {
-      $state.error();
-    });
+async function infiniteLoad() {
+  page.value += 1;
 }
 
 watch(

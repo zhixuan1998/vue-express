@@ -175,6 +175,7 @@ function setRelativeElPosition() {
       width: 100%;
       padding: 0 10px;
       border: none;
+      background-color: inherit;
 
       div {
         display: flex;

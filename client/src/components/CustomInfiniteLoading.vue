@@ -22,12 +22,6 @@ const props = defineProps({
 const infiniteLoadRef = ref(null);
 let observer = null;
 
-let state = {
-  loaded: observe,
-  complete: disconnectObserver,
-  error: unobserve
-};
-
 onMounted(() => {
   if (props.loaded) initObserver();
 });
@@ -39,8 +33,7 @@ watch(
       await nextTick();
       initObserver();
     }
-  },
-  { once: true }
+  }
 );
 
 function initObserver() {
@@ -61,7 +54,7 @@ function initObserver() {
 }
 
 function entryCallback() {
-  emits('infinite-loading', state);
+  emits('infinite-loading');
 }
 
 function observe() {
@@ -78,6 +71,12 @@ function disconnectObserver() {
 
 onBeforeUnmount(() => {
   disconnectObserver();
+});
+
+defineExpose({
+  loaded: observe,
+  pause: unobserve,
+  stop: disconnectObserver
 });
 </script>
 
