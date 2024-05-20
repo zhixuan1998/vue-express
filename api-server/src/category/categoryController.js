@@ -1,8 +1,10 @@
 const { createController } = require("awilix-express");
 const { generateSuccessResponse, generateErrorResponse } = require("../../utils/responseParser");
-const errorMessages = require("../../errorMessages");
 
-const controller = ({ config, categoryRepository }) => {
+const controller = ({
+    config,
+    categoryRepository,
+}) => {
     return {
         async getCategories(req, res) {
             try {

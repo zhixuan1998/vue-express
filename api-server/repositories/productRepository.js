@@ -10,9 +10,8 @@ module.exports = ({ collections: { products } }) => {
             productIds,
             categoryIds,
             brandIds,
-            shopIds,
-            limit = 10,
-            skip = 0,
+            limit,
+            skip,
             sortBy = productSortByEnum.NAME,
             sortDirection = sortDirectionEnum.ASC
         }) {
@@ -38,16 +37,15 @@ module.exports = ({ collections: { products } }) => {
                     initQuery.brandId = { $in: brandIds.map((id) => new ObjectId(id)) };
                 }
 
-                if (shopIds?.length) {
-                    initQuery.shopId = { $in: shopIds.map((id) => new ObjectId(id)) };
+                const beforeResult = products
+                    .aggregate([{ $match: initQuery }])
+                    .sort({ [sortBy]: sortDirection });
+
+                if (typeof skip == "number" && typeof limit == "number") {
+                    beforeResult.skip(skip).limit(limit);
                 }
 
-                const result = await products
-                    .aggregate([{ $match: initQuery }])
-                    .sort({ [sortBy]: sortDirection })
-                    .skip(skip)
-                    .limit(limit)
-                    .toArray();
+                const result = await beforeResult.toArray();
 
                 return [null, result.length ? result.map((r) => new Product(r)) : null];
             } catch (error) {

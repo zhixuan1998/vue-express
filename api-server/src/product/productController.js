@@ -2,11 +2,12 @@ const { createController } = require("awilix-express");
 const { generateSuccessResponse, generateErrorResponse } = require("../../utils/responseParser");
 const errorMessages = require("../../errorMessages");
 const followTypeEnum = require("../../enum/followType");
-
 const controller = ({
     config,
     productRepository,
-    // wishlistRepository
+    // wishlistRepository,
+
+    listingCommonFunction
 }) => {
 
     return {
@@ -16,7 +17,6 @@ const controller = ({
                     search,
                     categoryIds = [],
                     brandIds = [],
-                    shopIds = [],
                     isFollowedBrand,
                     isFollowedShop,
                     isWishlist,
@@ -32,10 +32,6 @@ const controller = ({
                     return res.status(403).send(generateErrorResponse(errorMessages.forbidden()));
 
                 const userId = user?.id;
-
-                limit = limit <= 0 ? 10 : limit;
-                page = page <= 0 ? 1 : page;
-                let skip = limit * (page - 1);
 
                 if (isFollowedBrand === true) {
                     const [followedBrandsError, followedBrands] = await followRepository.getAll({
@@ -78,14 +74,18 @@ const controller = ({
                 //     }
                 // }
 
-                const [productsError, products] = await productRepository.getAll({
+                const filterData = {
                     search,
                     productIds,
                     categoryIds,
-                    brandIds,
-                    shopIds,
+                    brandIds
+                }
+
+                const [productsError, { listing: products, pagination }] = await listingCommonFunction.getListing({
+                    queryFunction: productRepository.getAll,
                     limit,
-                    skip,
+                    page,
+                    filterData
                 });
 
                 if (productsError)
@@ -111,7 +111,7 @@ const controller = ({
                     }
                 }) : [];
 
-                return res.status(200).send(generateSuccessResponse(response));
+                return res.status(200).send(generateSuccessResponse(response, pagination));
 
             } catch (err) {
                 console.log(err);
