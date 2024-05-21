@@ -1,5 +1,5 @@
 <template>
-  <div class="main-content" :class="{ mobile: isMobile }">
+  <div class="main-content">
     <custom-form
       :header="{ title: 'Log In', description: 'Please enter your credentials' }"
       :maxWidth="maxWidth"
@@ -113,8 +113,6 @@ const $v = useVuelidate(
 
 <style lang="scss" scoped>
 .main-content {
-  height: 600px;
-
   .credential-section {
     display: flex;
     flex-direction: column;
@@ -124,14 +122,6 @@ const $v = useVuelidate(
       margin: 0;
       cursor: pointer;
     }
-  }
-}
-
-.main-content.mobile {
-  height: auto;
-
-  & > * {
-    margin-top: 0;
   }
 }
 </style>

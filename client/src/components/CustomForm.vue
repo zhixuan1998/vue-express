@@ -1,5 +1,5 @@
 <template>
-  <div class="container form-container" :class="{ mobile: isMobile }">
+  <div class="container form-container" :class="{ 'my-auto': !isMobile, 'rounded-0': isMobile }">
     <div v-if="header" class="top-section">
       <div class="title">{{ header.title }}</div>
       <div class="description">{{ header.description }}</div>
@@ -77,9 +77,5 @@ const [isMobile] = useMediaQuery([{ maxWidth: props.maxWidth }]);
     flex-direction: column;
     gap: 22px;
   }
-}
-
-.form-container.mobile {
-  border-radius: 0;
 }
 </style>

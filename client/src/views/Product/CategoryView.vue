@@ -9,8 +9,6 @@
 import { ref, watch, onMounted, inject } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-const emits = defineEmits(['update']);
-
 const route = useRoute();
 const router = useRouter();
 const $messages = inject('messages');
@@ -39,7 +37,6 @@ watch(
 
 function setCategory() {
   category.value = props.categories.find((o) => o.categoryId === route.params.categoryId);
-  emits('update');
 }
 
 function goToCategory(item) {

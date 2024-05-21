@@ -1,9 +1,5 @@
 <template>
-  <div v-if="loaded" class="d-flex justify-content-center" ref="infiniteLoadRef">
-    <div class="spinner-border" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-  </div>
+  <div v-if="loaded" ref="infiniteLoadRef"></div>
 </template>
 
 <script setup>
@@ -12,11 +8,7 @@ import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue';
 const emits = defineEmits(['infinite-loading']);
 
 const props = defineProps({
-  loaded: Boolean,
-  threshold: {
-    type: Number,
-    default: 0.5
-  }
+  loaded: Boolean
 });
 
 const infiniteLoadRef = ref(null);
@@ -39,17 +31,13 @@ watch(
 function initObserver() {
   let callback = (entries) => {
     entries.forEach((entry) => {
-      if (entry.intersectionRatio >= props.threshold) {
+      if (entry.intersectionRatio >= 1) {
         entryCallback();
       }
     });
   };
 
-  let options = {
-    threshold: props.threshold >= 0 && props.threshold <= 1 ? props.threshold : 1
-  };
-
-  observer = new IntersectionObserver(callback, options);
+  observer = new IntersectionObserver(callback, { threshold: 1 });
   observe();
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="header-container" :class="{ 'search_box-enabled': searchBox }">
+  <header class="header-container" :class="{ 'search_box-enabled': searchBox }">
     <div class="logo-container">
       <icon-logo class="logo" @click="router.push({ name: 'Home' })" />
       <div v-if="slots['right-content']" class="right-content">
@@ -31,7 +31,7 @@
         <span class="item-cart-count" v-if="true">1</span>
       </div>
     </div>
-  </div>
+  </header>
 </template>
 
 <script setup>

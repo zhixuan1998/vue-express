@@ -12,10 +12,18 @@
   font-size: 12px;
 }
 
+ul {
+  padding: 0;
+}
+
+li {
+  list-style-type: none;
+  list-style-position: outside;
+}
+
 a,
 .green {
   text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.15s;
+  color: inherit;
   padding: 3px;
 }

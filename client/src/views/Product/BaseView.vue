@@ -1,7 +1,7 @@
 <template>
   <custom-header searchBox :searchOptions="searchAreaOptions" @search="search" ref="headerRef" />
   <div class="main-content">
-    <router-view v-bind="routerViewProps" @update="clearInput"> </router-view>
+    <router-view v-bind="routerViewProps"> </router-view>
     <custom-listing-section :minItemWidthInPx="132.5" :gapWidthInPx="5">
       <div v-for="item of products" class="item" :key="item.productId">
         <div class="item-image">
@@ -13,6 +13,11 @@
         </div>
       </div>
     </custom-listing-section>
+    <div v-show="isLoading" class="loading-indicator">
+      <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+      </div>
+    </div>
     <custom-infinite-loading
       :loaded="enableInfiniteLoad"
       @infinite-loading="infiniteLoad"
@@ -38,12 +43,14 @@ const router = useRouter();
 const $repositories = inject('repositories');
 
 let allSearchAreaOptions = [];
-const page = ref(1);
 const searchAreaOptions = ref([]);
+const brands = ref([]);
 const products = ref([]);
 const categories = ref([]);
-const brands = ref([]);
 const headerRef = ref(null);
+
+const page = ref(1);
+const isLoading = ref(false);
 const infiniteLoadRef = ref(null);
 const enableInfiniteLoad = ref(false);
 
@@ -86,33 +93,57 @@ const productFilter = {
 
 watch(
   [() => route.query, () => route.params, page],
-  async ([newQuery, newParams, newPage]) => {
+  async ([newQuery, newParams, newPage], [, oldParams = {}], onCleanup) => {
     const { search } = newQuery;
-    const { brandId, categoryId } = newParams;
+    const { brandId: newBrandId, categoryId: newCategoryId } = newParams;
+    const { brandId: oldBrandId, categoryId: oldCategoryId } = oldParams;
 
-    page.value = productFilter.page === newPage ? 1 : newPage;
+    if (oldBrandId !== newBrandId || oldCategoryId !== newCategoryId) {
+      clearInput();
+    }
+
+    if (productFilter.page === newPage) {
+      enableInfiniteLoad.value = false;
+      page.value = 1;
+      products.value = [];
+    }
 
     productFilter.search = search || '';
-    productFilter.brandIds = brandId ? [brandId] : [];
-    (productFilter.categoryIds = categoryId ? [categoryId] : []), (productFilter.page = page.value);
+    productFilter.brandIds = newBrandId ? [newBrandId] : [];
+    productFilter.categoryIds = newCategoryId ? [newCategoryId] : [];
+    productFilter.page = page.value;
 
-    await getProducts();
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    const getProductsRequest = getProducts(signal);
+
+    onCleanup(() => controller.abort());
+
+    await getProductsRequest;
   },
   { immediate: true }
 );
 
-async function getProducts() {
+async function getProducts(signal) {
+  isLoading.value = true;
+
   await $repositories.productRepository
-    .getAll(productFilter)
+    .getAll(productFilter, signal)
     .then(async ({ data: { data } }) => {
-      const results = data?.results ?? [];
-      products.value = page.value === 1 ? results : [...products.value, ...results];
+      products.value = [...products.value, ...(data?.results ?? [])];
 
       await nextTick();
       enableInfiniteLoad.value = data.pagination.isLastPage ? false : true;
-      console.log(enableInfiniteLoad.value);
+
+      if (data.pagination.isLastPage) {
+        isLoading.value = false;
+      }
     })
-    .catch(() => infiniteLoadRef.value.pause());
+    .catch(() => {
+      isLoading.value = false;
+      infiniteLoadRef.value.pause();
+    });
 }
 
 async function infiniteLoad() {
@@ -132,14 +163,27 @@ function filterSearchAreaOptions(routeName) {
 }
 
 async function search(value, searchArea) {
+  const name = SEARCH_AREA_ROUTE_NAME[searchArea] ?? SEARCH_AREA_ROUTE_NAME.all;
+
   router.push({
-    name: SEARCH_AREA_ROUTE_NAME[searchArea],
+    name,
     params: route.params ?? {},
     query: { search: encodeURI(value) }
   });
 }
 
 function clearInput() {
-  headerRef?.value.searchBoxRef?.clearInput();
+  headerRef?.value?.searchBoxRef?.clearInput();
 }
 </script>
+
+<style lang="scss">
+.loading-indicator {
+  display: flex;
+  justify-content: center;
+
+  .spinner-border {
+    color: func.theme-color(xl, 0.5);
+  }
+}
+</style>

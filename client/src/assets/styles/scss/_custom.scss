@@ -23,12 +23,12 @@ input {
     background-color: func.theme-color(xs);
 
     * {
-        // font-family: NotoSans-Regular, "Microsoft JhengHei UI", Poppins, Roboto, sans-serif;
-        font-family: "Microsoft JhengHei UI", Poppins, Roboto, sans-serif;
+        font-family: NotoSans-Regular, "Microsoft JhengHei UI", Poppins, Roboto, sans-serif;
     }
 
     > * {
-        margin: auto;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     [class*="-section"] {

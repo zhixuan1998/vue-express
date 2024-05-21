@@ -1,6 +1,7 @@
 <template>
-  <div style="width: 100%; min-height: 100vh">
+  <div class="app-container">
     <router-view></router-view>
+    <custom-footer></custom-footer>
     <div v-show="showModalOverlay" class="modal-overlay">
       <Transition name="bounce" @after-leave="hideModalOverlay">
         <div v-show="showModalContainer" class="modal-container">
@@ -61,45 +62,54 @@ provide('modal', { hide: hideModalContainer, open: openModalContainer });
 </script>
 
 <style lang="scss" scoped>
-.modal-overlay {
-  position: absolute;
-  display: flex;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgb(0, 0, 0, 0.5);
-  z-index: 20;
+.app-container {
+  display: grid;
+  width: 100%;
+  min-height: 100vh;
+  grid-auto-flow: row;
+  grid-template-rows: auto 1fr auto;
 
-  .modal-container {
+  .modal-overlay {
+    position: absolute;
     display: flex;
-    margin: auto;
-    flex-direction: column;
-    width: min(100%, 500px);
-    background-color: #ffffff;
-    box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.14);
-    padding: 30px;
-    row-gap: 20px;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgb(0, 0, 0, 0.5);
+    z-index: 20;
 
-    & > * {
-      width: 100%;
-    }
+    .modal-container {
+      display: flex;
+      margin: auto;
+      flex-direction: column;
+      width: min(100%, 500px);
+      background-color: #ffffff;
+      box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.14);
+      padding: 30px;
+      row-gap: 20px;
 
-    .title,
-    .body,
-    .button {
-      text-align: center;
-    }
+      & > * {
+        width: 100%;
+      }
 
-    .title {
-      font-size: 20px;
-      font-weight: 550;
-    }
+      .title,
+      .body,
+      .button {
+        text-align: center;
+      }
 
-    .body {
-      font-size: 15px;
+      .title {
+        font-size: 20px;
+        font-weight: 550;
+      }
+
+      .body {
+        font-size: 15px;
+      }
     }
   }
 }
+
 
 .bounce-enter-active {
   animation: bounce-in 0.3s;
@@ -111,13 +121,13 @@ provide('modal', { hide: hideModalContainer, open: openModalContainer });
 
 @keyframes bounce-in {
   0% {
-    scale: 0;
+    transform: scale(0);
   }
   50% {
-    scale: 1.25;
+    transform: scale(1.25);
   }
   100% {
-    scale: 1;
+    transform: scale(1);
   }
 }
 </style>

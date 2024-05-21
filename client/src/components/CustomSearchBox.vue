@@ -71,7 +71,7 @@ function clearInput() {
 }
 
 function initDropdownValue() {
-  if (!props.searchOptions?.length) return;
+  if (!props.searchOptions?.length) return (dropdownValue.value = '');
 
   dropdownValue.value = props.searchDropdown?.keyField
     ? props.searchOptions[0][props.searchDropdown.keyField]

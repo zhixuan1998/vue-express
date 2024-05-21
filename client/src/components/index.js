@@ -1,5 +1,6 @@
 import CustomForm from './CustomForm.vue';
 import CustomButton from './CustomButton.vue';
+import CustomFooter from './CustomFooter.vue';
 import CustomHeader from './CustomHeader.vue';
 import CustomDropdown from './CustomDropdown.vue';
 import CustomSearchBox from './CustomSearchBox.vue';
@@ -15,6 +16,7 @@ import CustomSocialLoginButtonGroup from './CustomSocialLoginButtonGroup.vue';
 export default {
     CustomForm,
     CustomButton,
+    CustomFooter,
     CustomHeader,
     CustomDropdown,
     CustomSearchBox,
