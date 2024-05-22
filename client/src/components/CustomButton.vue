@@ -19,7 +19,7 @@ defineProps({
   flex-grow: 1;
   padding: 9px 36px;
   text-align: center;
-  border: 1px solid #{func.theme-color(l)};
+  border: 1px solid #{func.theme-color(xl)};
 
   &:disabled {
     cursor: not-allowed;
@@ -30,13 +30,13 @@ defineProps({
 
     &:disabled,
     &:hover {
-      background-color: func.theme-color(l, 0.9);
-      border-color: func.theme-color(l, 0.9);
+      background-color: func.theme-color(xl, 0.85);
+      border-color: func.theme-color(xl, 0.85);
     }
 
     &,
     &:active:not(:disabled) {
-      background-color: func.theme-color(l);
+      background-color: func.theme-color(xl);
     }
   }
 

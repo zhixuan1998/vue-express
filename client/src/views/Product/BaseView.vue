@@ -2,6 +2,12 @@
   <custom-header searchBox :searchOptions="searchAreaOptions" @search="search" ref="headerRef" />
   <div class="main-content">
     <router-view v-bind="routerViewProps"> </router-view>
+    <div class="pagination-section">
+      <custom-separator />
+      <span class="fw-bold">Items per page</span>
+      <custom-dropdown v-model="perPage" :options="perPageOptions"></custom-dropdown>
+      <custom-separator />
+    </div>
     <custom-listing-section :minItemWidthInPx="132.5" :gapWidthInPx="5">
       <div v-for="item of products" class="item" :key="item.productId">
         <div class="item-image">
@@ -18,16 +24,17 @@
         <span class="sr-only">Loading...</span>
       </div>
     </div>
-    <custom-infinite-loading
-      :loaded="enableInfiniteLoad"
-      @infinite-loading="infiniteLoad"
-      ref="infiniteLoadRef"
+    <custom-pagination
+      v-show="products.length"
+      v-model="currentPage"
+      :total-pages="totalPages"
+      :before-update="getProducts"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, inject, onMounted, watch, nextTick } from 'vue';
+import { ref, computed, inject, onBeforeMount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
 const DEFAULT_IMAGE_URL = 'https://picsum.photos/200';
@@ -42,31 +49,36 @@ const route = useRoute();
 const router = useRouter();
 const $repositories = inject('repositories');
 
+const initPage = 1;
+
+let perPageOptions = [];
 let allSearchAreaOptions = [];
 const searchAreaOptions = ref([]);
+const currentPage = ref(initPage);
+const pagination = ref(null);
+const perPage = ref(10);
 const brands = ref([]);
 const products = ref([]);
 const categories = ref([]);
 const headerRef = ref(null);
 
-const page = ref(1);
 const isLoading = ref(false);
-const infiniteLoadRef = ref(null);
-const enableInfiniteLoad = ref(false);
 
-onMounted(async () => {
+onBeforeMount(async () => {
   allSearchAreaOptions = await $repositories.lookupRepository.getSearchProductAreas();
   filterSearchAreaOptions(route.name);
 
-  const [categoryResults, brandResults] = await Promise.all([
+  const [perPageOptionsResult, categoriesResult, brandsResult] = await Promise.all([
+    $repositories.lookupRepository.getRecordPerPageOptions(),
     $repositories.categoryRepository.getAll({}),
     $repositories.brandRepository.getAll({})
   ]);
 
-  categories.value = categoryResults?.data?.data?.results ?? [];
-  brands.value = brandResults?.data?.data?.results ?? [];
+  perPageOptions = perPageOptionsResult;
+  categories.value = categoriesResult?.data?.data?.results ?? [];
+  brands.value = brandsResult?.data?.data?.results ?? [];
 
-  // await getProducts();
+  await getProducts(initPage);
 });
 
 const routerViewProps = computed(() => {
@@ -83,71 +95,60 @@ const routerViewProps = computed(() => {
   return props;
 });
 
-const productFilter = {
-  search: '',
-  brandIds: [],
-  categoryIds: [],
-  limit: 30,
-  page: 1
-};
+const totalPages = computed(() =>
+  pagination.value?.totalItems ? Math.ceil(pagination.value.totalItems / perPage.value) : 0
+);
 
 watch(
-  [() => route.query, () => route.params, page],
-  async ([newQuery, newParams, newPage], [, oldParams = {}], onCleanup) => {
-    const { search } = newQuery;
+  [() => route.query, () => route.params, perPage],
+  async ([, newParams, newPerPage], [, oldParams, oldPerPage]) => {
     const { brandId: newBrandId, categoryId: newCategoryId } = newParams;
     const { brandId: oldBrandId, categoryId: oldCategoryId } = oldParams;
 
-    if (oldBrandId !== newBrandId || oldCategoryId !== newCategoryId) {
+    const paramChanged = oldBrandId !== newBrandId || oldCategoryId !== newCategoryId;
+    const perPageChanged = paramChanged || oldPerPage !== newPerPage;
+
+    if (paramChanged) {
       clearInput();
     }
 
-    if (productFilter.page === newPage) {
-      enableInfiniteLoad.value = false;
-      page.value = 1;
-      products.value = [];
+    if (paramChanged || perPageChanged) {
+      currentPage.value = 1;
     }
 
-    productFilter.search = search || '';
-    productFilter.brandIds = newBrandId ? [newBrandId] : [];
-    productFilter.categoryIds = newCategoryId ? [newCategoryId] : [];
-    productFilter.page = page.value;
-
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    const getProductsRequest = getProducts(signal);
-
-    onCleanup(() => controller.abort());
-
-    await getProductsRequest;
-  },
-  { immediate: true }
+    await getProducts(currentPage.value);
+  }
 );
 
-async function getProducts(signal) {
+function getProductFilter() {
+  const { search } = route.query;
+  const { brandId, categoryId } = route.params;
+
+  return {
+    search: search || '',
+    brandIds: brandId ? [brandId] : [],
+    categoryIds: categoryId ? [categoryId] : [],
+    limit: perPage.value * 1
+  };
+}
+
+async function getProducts(page) {
+  const filter = getProductFilter();
+  filter.page = page;
+
+  products.value = [];
+
   isLoading.value = true;
 
   await $repositories.productRepository
-    .getAll(productFilter, signal)
+    .getAll(filter)
     .then(async ({ data: { data } }) => {
-      products.value = [...products.value, ...(data?.results ?? [])];
-
-      await nextTick();
-      enableInfiniteLoad.value = data.pagination.isLastPage ? false : true;
-
-      if (data.pagination.isLastPage) {
-        isLoading.value = false;
-      }
+      products.value = data?.results ?? [];
+      pagination.value = data.pagination;
     })
-    .catch(() => {
+    .finally(() => {
       isLoading.value = false;
-      infiniteLoadRef.value.pause();
     });
-}
-
-async function infiniteLoad() {
-  page.value += 1;
 }
 
 watch(
@@ -178,10 +179,28 @@ function clearInput() {
 </script>
 
 <style lang="scss">
+.pagination-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+
+  margin: 5px 0;
+  gap: 10px;
+
+  .custom-dropdown {
+    height: 35px;
+
+    .dropdown-container {
+      border: 1px solid func.theme-color(l);
+      background-color: #fff;
+    }
+  }
+}
 .loading-indicator {
   display: flex;
   justify-content: center;
-
   .spinner-border {
     color: func.theme-color(xl, 0.5);
   }

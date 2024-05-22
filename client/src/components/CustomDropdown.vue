@@ -135,7 +135,7 @@ function initSearch() {
 function initDisplayValue() {
   if (!selectedItem.value) return;
 
-  const initOption = filteredOptions.value.find((o) => o[props.keyField] === selectedItem.value);
+  const initOption = filteredOptions.value.find((o) => o[props.keyField] == selectedItem.value);
   displayValue.value = initOption
     ? typeof props.displayField === 'function'
       ? props.displayField(initOption)

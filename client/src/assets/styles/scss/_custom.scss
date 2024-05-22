@@ -29,6 +29,10 @@ input {
     > * {
         margin-left: auto;
         margin-right: auto;
+
+        @media (width < 576px) {
+            padding: 0 5px;
+        }
     }
 
     [class*="-section"] {
@@ -52,10 +56,6 @@ input {
     }
 
     .listing-section {
-        @media (width < 576px) {
-            padding: 5px;
-        }
-
         .item {
             &:hover {
                 translate: 0 -2.5px;

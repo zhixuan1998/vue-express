@@ -12,7 +12,7 @@
       @search="search"
       ref="searchBoxRef"
     />
-    <div v-if="hasMenu" class="menu-container">
+    <div v-if="hasMenu" class="menu-container me-2" >
       <div class="item" v-if="!userStore.user">
         <router-link :to="`/login?redirect=${route.fullPath}`">LOGIN</router-link>
       </div>
@@ -28,7 +28,7 @@
         <router-link to="/cart">
           <font-awesome-icon :icon="faCartShopping" />
         </router-link>
-        <span class="item-cart-count" v-if="true">1</span>
+        <span class="item-cart-count" v-if="true">100</span>
       </div>
     </div>
   </header>
@@ -135,7 +135,6 @@ defineExpose({ searchBoxRef });
       user-select: none;
       text-align: center;
 
-      padding-left: var(--padding);
       padding-right: var(--padding);
 
       > * {
@@ -144,7 +143,7 @@ defineExpose({ searchBoxRef });
 
       &.item-cart {
         position: relative;
-        padding-left: calc(var(--padding) * 2);
+        padding-left: var(--padding);
 
         &:hover .item-cart-count {
           background-color: rgba(36, 32, 104, 1);
@@ -156,10 +155,10 @@ defineExpose({ searchBoxRef });
           align-items: center;
           justify-content: center;
           top: -12.5px;
-          left: 60%;
+          left: 50%;
 
-          padding-left: var(--padding);
-          padding-right: var(--padding);
+          padding-left: calc(var(--padding) * 0.5);
+          padding-right: calc(var(--padding) * 0.5);
           height: 22px;
 
           border-radius: 50px;
@@ -171,8 +170,7 @@ defineExpose({ searchBoxRef });
       }
 
       &:has(+ .item-cart) {
-        border-right: 1px solid #{func.theme-color(l)};
-        padding-right: calc(var(--padding) * 2);
+        border-right: 1px solid #{func.theme-color(l, 0.7)};
       }
 
       a {

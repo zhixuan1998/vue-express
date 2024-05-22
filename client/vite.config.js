@@ -31,7 +31,7 @@ const config = defineConfig({
                     @use "./src/assets/styles/scss/_mixins.scss" as mix;
                     @use "./src/assets/styles/scss/_functions.scss" as func;
                 `,
-                loadPaths: ['/node_modules/bootstrap/scss', './src/assets/styles/scss']
+                loadPaths: ['/node_modules', './src/assets/styles/scss']
             }
         }
     }
