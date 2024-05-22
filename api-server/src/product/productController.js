@@ -81,15 +81,16 @@ const controller = ({
                     brandIds
                 }
 
-                const [productsError, { listing: products, pagination }] = await listingCommonFunction.getListing({
-                    queryFunction: productRepository.getAll,
+                const [productAndPaginationError, { listing: products, pagination }] = await listingCommonFunction.getListingAndPagination({
+                    listingFunction: productRepository.getAll,
+                    countFunction: productRepository.getCount,
                     limit,
                     page,
                     filterData
                 });
 
-                if (productsError)
-                    throw productsError;
+                if (productAndPaginationError)
+                    throw productAndPaginationError;
 
                 let response = products ? products.map(r => {
                     const productId = r.getId();

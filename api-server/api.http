@@ -62,8 +62,9 @@ Content-Type: application/json
 {
     "brandIds": [],
     "categoryIds": [],
-    "search": ""
-  
+    "search": "",
+    "page": 1,
+    "limit": 10
 }
 
 ######################################################################

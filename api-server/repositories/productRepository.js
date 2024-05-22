@@ -4,6 +4,37 @@ const sortDirectionEnum = require("../enum/sortDirection");
 const productSortByEnum = require("../enum/productSortBy");
 
 module.exports = ({ collections: { products } }) => {
+
+    function getInitQuery({
+        search,
+        productIds,
+        categoryIds,
+        brandIds,
+    }) {
+        let query = {
+            isEnable: true,
+            isDeleted: false
+        };
+
+        if (search) {
+            query.name = { $regex: "^" + search, $options: "i" };
+        }
+
+        if (productIds?.length) {
+            query._id = { $in: productIds.map((id) => new ObjectId(id)) };
+        }
+
+        if (categoryIds?.length) {
+            query.categoryIds = { $in: categoryIds.map((id) => new ObjectId(id)) };
+        }
+
+        if (brandIds?.length) {
+            query.brandId = { $in: brandIds.map((id) => new ObjectId(id)) };
+        }
+
+        return query;
+    }
+
     return {
         async getAll({
             search,
@@ -15,27 +46,14 @@ module.exports = ({ collections: { products } }) => {
             sortBy = productSortByEnum.NAME,
             sortDirection = sortDirectionEnum.ASC
         }) {
+
             try {
-                let initQuery = {
-                    isEnable: true,
-                    isDeleted: false
-                };
-
-                if (search) {
-                    initQuery.name = { $regex: "^" + search, $options: "i" };
-                }
-
-                if (productIds?.length) {
-                    initQuery._id = { $in: productIds.map((id) => new ObjectId(id)) };
-                }
-
-                if (categoryIds?.length) {
-                    initQuery.categoryIds = { $in: categoryIds.map((id) => new ObjectId(id)) };
-                }
-
-                if (brandIds?.length) {
-                    initQuery.brandId = { $in: brandIds.map((id) => new ObjectId(id)) };
-                }
+                const initQuery = getInitQuery({
+                    search,
+                    productIds,
+                    categoryIds,
+                    brandIds
+                });
 
                 const beforeResult = products
                     .aggregate([{ $match: initQuery }])
@@ -48,6 +66,33 @@ module.exports = ({ collections: { products } }) => {
                 const result = await beforeResult.toArray();
 
                 return [null, result.length ? result.map((r) => new Product(r)) : null];
+
+            } catch (error) {
+                return [error];
+            }
+        },
+
+        async getCount({
+            search,
+            productIds,
+            categoryIds,
+            brandIds
+        }) {
+            try {
+                const initQuery = getInitQuery({
+                    search,
+                    productIds,
+                    categoryIds,
+                    brandIds
+                });
+
+                const result = await products.aggregate([
+                    { $match: initQuery },
+                    { $count: "count" }
+                ]).toArray();
+
+                return [null, result[0].count];
+
             } catch (error) {
                 return [error];
             }

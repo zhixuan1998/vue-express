@@ -4,34 +4,44 @@ module.exports = ({
     config
 }) => {
     return {
-        async getListing({ queryFunction, limit = 10, page = 1, filterData = {} }) {
+        async getListingAndPagination({ listingFunction, countFunction, limit = 10, page = 1, filterData = {} }) {
             try {
                 const obj = {
                     listing: null,
                     pagination: null
                 }
 
-                if (typeof queryFunction != "function")
+                if (typeof listingFunction != "function")
                     return [null, obj];
 
                 limit = limit <= 0 ? 10 : limit;
                 page = page <= 0 ? 1 : page;
 
-                filterData.limit = limit + 1;
-                filterData.skip = limit * (page - 1);
+                const listingFilterData = {
+                    ...filterData,
+                    limit: limit + 1,
+                    skip: limit * (page - 1)
+                }
 
-                const [listingError, listing] = await queryFunction(filterData);
+                const [listingError, listing] = await listingFunction(listingFilterData);
 
                 if (listingError)
                     throw listingError;
 
                 const count = listing?.length ?? 0;
 
+                const { sortBy, sortDirection, ...countFilterData } = filterData;
+
+                const [totalCountError, totalCount] = typeof countFunction == "function" ? await countFunction(countFilterData) : [null, null];
+
+                if (totalCountError)
+                    throw totalCountError;
+
                 if (page && limit) {
-                    obj.pagination = generatePagination({ page, limit, count });
+                    obj.pagination = generatePagination({ page, limit, count, totalCount });
                 }
 
-                obj.listing = count > limit ? listing.slice(1, -1) : listing;
+                obj.listing = count > limit ? listing.slice(0, -1) : listing;
 
                 return [null, obj];
 
