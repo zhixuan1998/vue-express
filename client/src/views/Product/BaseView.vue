@@ -2,7 +2,7 @@
   <custom-header searchBox :searchOptions="searchAreaOptions" @search="search" ref="headerRef" />
   <div class="main-content">
     <router-view v-bind="routerViewProps"> </router-view>
-    <div class="pagination-section">
+    <div v-if="products.length" class="pagination-section">
       <custom-separator />
       <span class="fw-bold">Items per page</span>
       <custom-dropdown v-model="perPage" :options="perPageOptions"></custom-dropdown>
@@ -11,7 +11,7 @@
     <custom-listing-section :minItemWidthInPx="132.5" :gapWidthInPx="5">
       <div v-for="item of products" class="item" :key="item.productId">
         <div class="item-image">
-          <img :src="item.imageUrl ?? DEFAULT_IMAGE_URL" onerror="this.src=DEFAULT_IMAGE_URL" />
+          <img :src="item.logoUrl ?? DEFAULT_IMAGE_URL" onerror="this.src=DEFAULT_IMAGE_URL" />
         </div>
         <div class="item-content">
           <span class="item-name">{{ item.name }}</span>
@@ -29,6 +29,7 @@
       v-model="currentPage"
       :total-pages="totalPages"
       :before-update="getProducts"
+      :disabled="isLoading"
     />
   </div>
 </template>
@@ -36,6 +37,7 @@
 <script setup>
 import { ref, computed, inject, onBeforeMount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { compareObjectValue } from '@/utils/compare';
 
 const DEFAULT_IMAGE_URL = 'https://picsum.photos/200';
 
@@ -88,12 +90,18 @@ const routerViewProps = computed(() => {
     props.categories = categories.value;
   }
 
-  if (route.name !== 'ProductCategory') {
+  if (route.name === 'ProductBrand') {
+    props.brand = brand.value;
+  }
+
+  if (route.name === "Home") {
     props.brands = brands.value;
   }
 
   return props;
 });
+
+const brand = computed(() => brands.value.find((r) => r.brandId === route.params.brandId));
 
 const totalPages = computed(() =>
   pagination.value?.totalItems ? Math.ceil(pagination.value.totalItems / perPage.value) : 0
@@ -102,10 +110,7 @@ const totalPages = computed(() =>
 watch(
   [() => route.query, () => route.params, perPage],
   async ([, newParams, newPerPage], [, oldParams, oldPerPage]) => {
-    const { brandId: newBrandId, categoryId: newCategoryId } = newParams;
-    const { brandId: oldBrandId, categoryId: oldCategoryId } = oldParams;
-
-    const paramChanged = oldBrandId !== newBrandId || oldCategoryId !== newCategoryId;
+    const paramChanged = !compareObjectValue(oldParams, newParams);
     const perPageChanged = paramChanged || oldPerPage !== newPerPage;
 
     if (paramChanged) {
@@ -135,8 +140,6 @@ function getProductFilter() {
 async function getProducts(page) {
   const filter = getProductFilter();
   filter.page = page;
-
-  products.value = [];
 
   isLoading.value = true;
 

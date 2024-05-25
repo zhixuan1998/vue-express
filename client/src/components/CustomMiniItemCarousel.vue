@@ -25,7 +25,7 @@
       >
         <div class="item-image">
           <img
-            :src="item.imageUrl"
+            :src="item.logoUrl"
             class="rounded-circle"
             onerror="this.src='https://picsum.photos/200'"
           />

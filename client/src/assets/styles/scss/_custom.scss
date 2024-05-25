@@ -40,7 +40,7 @@ input {
         background-color: rgba(0, 0, 0, 0);
     }
 
-    .content-section .content-label {
+    .carousel-section .section-title {
         color: rgba(36, 32, 104, 0.5);
         padding: 5px;
         font-size: 30px;
@@ -50,9 +50,13 @@ input {
         padding: 0;
         row-gap: 0;
 
-        .content-label {
+        .section-title {
             text-align: center;
         }
+    }
+
+    .top-section {
+        
     }
 
     .listing-section {

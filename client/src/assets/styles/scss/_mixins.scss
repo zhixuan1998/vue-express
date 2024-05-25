@@ -2,7 +2,7 @@
 
 @mixin base-wrapper {
     width: 100%;
-    padding: 10px func.responsive-spacing();
+    padding: 10px func.responsive-scaling();
 }
 
 @mixin multiline-ellipsis($line-clamp: 2) {

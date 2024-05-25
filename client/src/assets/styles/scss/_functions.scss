@@ -3,7 +3,7 @@
 @use "sass:map";
 @use "variables" as var;
 
-@function responsive-spacing($min: 5, $max: 360, $min-width: 576, $max-width: 1920) {
+@function responsive-scaling($min: 5, $max: 360, $min-width: 576, $max-width: 1920) {
     @return calc(
         (max(100vw, ($min-width * 1px)) - ($min-width * 1px)) * (($max - $min) / ($max-width - $min-width)) +
             ($min * 1px)

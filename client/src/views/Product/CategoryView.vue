@@ -1,6 +1,6 @@
 <template>
-  <div class="content-section" v-show="categories.length">
-    <div class="content-label">{{ $messages.title.categories() }} - {{ category?.name || '' }}</div>
+  <div class="carousel-section" v-show="categories.length">
+    <div class="section-title">{{ $messages.title.categories() }} - {{ category?.name || '' }}</div>
     <custom-mini-item-carousel :items="categories" labelField="name" @select-item="goToCategory" />
   </div>
 </template>

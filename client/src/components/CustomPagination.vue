@@ -1,5 +1,5 @@
 <template>
-  <div class="pagination-indicator-container">
+  <div class="pagination-indicator-container" :class="{ disabled: props.disabled }">
     <span
       class="indicator-button"
       :class="{ disabled: isFirstThree || noRest }"
@@ -67,7 +67,8 @@ const props = defineProps({
   beforeUpdate: {
     type: Function,
     default: () => {}
-  }
+  },
+  disabled: Boolean
 });
 
 const rest = '...';
@@ -133,6 +134,13 @@ async function beforeMove(arg) {
 .pagination-indicator-container {
   display: flex;
 
+  &.disabled,
+  .disabled,
+  .rest {
+    cursor: default;
+    pointer-events: none;
+  }
+
   .indicator-button {
     display: flex;
     justify-content: center;
@@ -156,12 +164,6 @@ async function beforeMove(arg) {
 
     &:not(.active):not(.disabled):not(.rest):hover {
       background-color: func.theme-color(s);
-    }
-
-    &.rest,
-    &.disabled {
-      cursor: default;
-      pointer-events: none;
     }
 
     &.disabled {
